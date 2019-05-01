@@ -263,6 +263,8 @@ predict_interaction_outcome <- function(g1, g2,
                                                 intrinsic_growths = intrinsic_growths)
   
   predicted_outcome <- coex_outcome(niche_diff = rho, fitness_diff = fitness_ratio)
+  predicted_outcome_micr <- coex_outcome(niche_diff = rho_micr, fitness_diff = fitness_ratio_micr)
+  predicted_outcome_comp <- coex_outcome(niche_diff = rho_comp, fitness_diff = fitness_ratio_comp)
   
   bevers_I <- round(m1A+m2B-m1B-m2A, digits = 5)
   bevers_stabilization = -0.5*bevers_I
