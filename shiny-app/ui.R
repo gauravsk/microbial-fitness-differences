@@ -64,24 +64,24 @@ ui <- dashboardPage(
                                        label = withMathJax("Intraspecific competition- species 1 (\\(c_{11}\\))"),
                                        min = 0.0001,
                                        max = 0.1,
-                                       value = .003),
+                                       value = .003, step = .0001),
                            sliderInput(inputId = "c12",
                                        label = withMathJax("Interspecific competition- effect of species 2 on species 1 (\\(c_{12}\\))"),
                                        min = 0.0001,
                                        max = 0.1,
-                                       value = .0024)
+                                       value = .0024, step = .0001)
                     ),
                     column(6,
                            sliderInput(inputId = "c21",
                                        label = withMathJax("Interspecific competition- effect of species 1 on species 2 (\\(c_{21}\\))"),
                                        min = 0.0001,
                                        max = 0.1,
-                                       value = .0024),
+                                       value = .002, step = .0001),
                            sliderInput(inputId = "c22",
                                        label = withMathJax("Intraspecific competition- species 2 (\\(c_{22}\\))"),
                                        min = 0.0001,
                                        max = 0.1,
-                                       value = .004)
+                                       value = .004, step = .0001)
                     )),
                 
                 # Box of Microbe effects on plants ------
@@ -112,9 +112,15 @@ ui <- dashboardPage(
                                        min = -0.1,
                                        max = 0.1,
                                        value = -0.021)
-                    )),
+                    ))
+              ),
+              
+              # Second row -------
+              fluidRow(
                 # Output box for plot ------
-                box(plotOutput("cone"))
+                box(width = 12, plotOutput("cone")),
+                box(tableOutput("table1"))
+                
               )
       ),
       

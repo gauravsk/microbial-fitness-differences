@@ -22,36 +22,32 @@ server <- function(input, output) {
     do.call(predict_interaction_outcome, as.list(scenario_1_parameters()))
   })
   
+  plot_df <- reactive({
+    data.frame(nd = c(1-scenario_1_outcome()$rho,
+                      1-scenario_1_outcome()$rho_micr,
+                      1-scenario_1_outcome()$rho_comp),
+               fd = c(scenario_1_outcome()$fitness_ratio,
+                      scenario_1_outcome()$fitness_ratio_micr,
+                      scenario_1_outcome()$fitness_ratio_comp),
+               outcome = c(scenario_1_outcome()$coex_outcome,
+                           scenario_1_outcome()$coex_outcome_micr,
+                           scenario_1_outcome()$coex_outcome_comp),
+               which = c("Net outcome", "Microbes Only", "Competition Only"))
+  })  
   
   
   output$cone <- renderPlot({
-    
-    plot_df <- data.frame(nd = c(scenario_1_outcome()$rho,
-                                scenario_1_outcome()$rho_micr,
-                                scenario_1_outcome()$rho_comp),
-                          fd = c(scenario_1_outcome()$fitness_ratio,
-                                 scenario_1_outcome()$fitness_ratio_micr,
-                                 scenario_1_outcome()$fitness_ratio_comp),
-                          outcome = c(scenario_1_outcome()$coex_outcome))
-    
     coex_cone_truncated + 
-      geom_point(data = plot_df, aes(x = nd, y = fd))
-    # p2 <- make_coex_cone_w_scenarios(scenario_list(),
-    #                            scenario_names = c("Net outcome",
-    #                                               "Competition only", "Microbes only"),
-    #                            lab_adj = .06) +
-    #   scale_fill_manual(values = c( "#CC79A7", "#CC79A7", "#F0E442")) +
-    #   scale_y_log10(limits = c(10^-1, 10^1)) +
-    #   scale_x_continuous(limits = c(0, 1))
-    # p1 + p2
+      geom_point(data = plot_df(), aes(x = nd, y = fd, fill = factor(which), size = which),
+                 pch = 21, stroke = 1.2) + 
+      scale_fill_manual(values = c("#CC79A7", "#CC79A7", "#F0E442")) +
+      scale_size_manual(values = c(3,3,6)) + 
+      geom_text(data = plot_df(), aes(x = nd +.01, y = fd, label = which, color = outcome), hjust = 0,
+                size = c(7,4,4), fontface = "bold.italic") +
+      scale_color_manual(values = c("white", "black")) + 
+      theme(legend.position = "none")
   })
   
-  output$table <- renderTable({
-    rho_vec <- c(map_dbl(scenario_list(), "rho"),
-                 map_dbl(scenario_list, "rho_comp"),
-                 map_dbl(scenarios_1and2, "rho_micr"))
-    
-    
-  })
+  output$table1 <- renderTable({plot_df()})
   
 }

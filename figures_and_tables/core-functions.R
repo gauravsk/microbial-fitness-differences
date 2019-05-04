@@ -293,6 +293,8 @@ predict_interaction_outcome <- function(g1, g2,
                     fitness_ratio_comp = fitness_ratio_comp,
                     fitness_ratio_micr = fitness_ratio_micr,
                     coex_outcome = predicted_outcome,
+                    coex_outcome_micr = predicted_outcome_micr,
+                    coex_outcome_comp = predicted_outcome_comp,
                     bevers_I = bevers_I,
                     bevers_stabilization = bevers_stabilization,
                     bevers_fitdiff = bevers_fitdiff,
@@ -405,6 +407,8 @@ f2_predict_interaction_outcome <- function(g1, g2,
   fitness_ratio <- calculate_fitness_ratio(alpha_matrix = alpha_matrices$interaction_matrix, 
                                            intrinsic_growths = intrinsic_growths)
   predicted_outcome <- coex_outcome(niche_diff = rho, fitness_diff = fitness_ratio)
+  predicted_outcome_m <- coex_outcome(niche_diff = rho_micr, fitness_diff = fitness_ratio_micr)
+  predicted_outcome_c <- coex_outcome(niche_diff = rho_comp, fitness_diff = fitness_ratio_comp)
   bevers_I <- m1A+m2B-m1B-m2A
   
   parameter_vector <- c(g1 = g1, g2 = g2, 
@@ -424,6 +428,8 @@ f2_predict_interaction_outcome <- function(g1, g2,
                     rho = rho,
                     fitness_ratio = fitness_ratio,
                     coex_outcome = predicted_outcome,
+                    coex_outcome_m = predicted_outcome_m,
+                    coex_outcome_c = predicted_outcome_c,
                     bevers_I = bevers_I,
                     trajectory = trajectory,
                     rho_comp = rho_comp, 
