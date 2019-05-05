@@ -120,8 +120,8 @@ ui <- dashboardPage(
               # Second row -------
               fluidRow(
                 # Output box for plot ------
-                box(width = 12, plotOutput("cone")),
-                box(tableOutput("table1"))
+                box(width = 8, plotOutput("cone")),
+                box(width = 4, plotOutput("plot2"))
                 
               )
       ),

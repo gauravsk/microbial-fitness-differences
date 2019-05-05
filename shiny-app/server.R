@@ -19,7 +19,8 @@ scenario_2_parameters <- c(g1 = 1, g2 = 1,
                            qA = 0.1, qB = 0.1)
 times <- seq(from = 0, to = 85, by = 0.1)
 
-
+aa <- do.call(predict_interaction_outcome, as.list(scenario_1_parameters))
+aa$trajectory
 server <- function(input, output, session) {
   
   # Reset to Scenario 1 ----
@@ -110,6 +111,16 @@ server <- function(input, output, session) {
       theme(legend.position = "none")
   })
   
-  output$table1 <- renderTable({plot_df()})
+  output$plot2 <- renderPlot({
+    yn1 <- filter(scenario_1_outcome()$trajectory, species == "Ni") %>% 
+      select(size) %>% tail(., n = 1) %>% unlist %>% unname
+    yn2 <- filter(scenario_1_outcome()$trajectory, species == "Nj") %>% 
+      select(size) %>% tail(., n = 1) %>% unlist %>% unname
+    plot_trajectories(scenario_1_outcome()$trajectory) + 
+      annotate("text", x = 120, y = yn1+5, label = latex2exp::TeX("N_1"), size = 6) + 
+      annotate("text", x = 90, y = yn2+5, label = latex2exp::TeX("N_2"), size = 6) +
+      labs(title = "Trajectory for Net outcome") + 
+      theme(title = element_text(size = 14))
+  })
   
 }
