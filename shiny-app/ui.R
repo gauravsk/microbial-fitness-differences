@@ -13,6 +13,8 @@ ui <- dashboardPage(
     # Tab 1
     tabItems(
       tabItem(tabName = "bloop",
+              fluidRow(box(actionButton("scenario1_reset", label = "Reset to Scenario 1"),
+                           actionButton("scenario2_reset", label = "Reset to Scenario 2"))),
               fluidRow(
                 # Box of Intrinsic rates ---------
                 box(width = 4,
@@ -34,12 +36,12 @@ ui <- dashboardPage(
                            sliderInput(inputId = "vA1",
                                        label = withMathJax("Effect of species 1 on microbes A (\\(v_{A1}\\))"),
                                        min = 0.0001,
-                                       max = 0.1,
+                                       max = 0.01,
                                        value = 0.005),
                            sliderInput(inputId = "vB2",
                                        label = withMathJax("Effect of species 2 on microbes B (\\(v_{B2}\\))"),
                                        min = 0.0001,
-                                       max = 0.1,
+                                       max = 0.01,
                                        value = 0.005)
                     ),
                     column(4,
@@ -63,24 +65,24 @@ ui <- dashboardPage(
                            sliderInput(inputId = "c11",
                                        label = withMathJax("Intraspecific competition- species 1 (\\(c_{11}\\))"),
                                        min = 0.0001,
-                                       max = 0.1,
+                                       max = 0.01,
                                        value = .003, step = .0001),
                            sliderInput(inputId = "c12",
                                        label = withMathJax("Interspecific competition- effect of species 2 on species 1 (\\(c_{12}\\))"),
                                        min = 0.0001,
-                                       max = 0.1,
+                                       max = 0.01,
                                        value = .0024, step = .0001)
                     ),
                     column(6,
                            sliderInput(inputId = "c21",
                                        label = withMathJax("Interspecific competition- effect of species 1 on species 2 (\\(c_{21}\\))"),
                                        min = 0.0001,
-                                       max = 0.1,
+                                       max = 0.01,
                                        value = .002, step = .0001),
                            sliderInput(inputId = "c22",
                                        label = withMathJax("Intraspecific competition- species 2 (\\(c_{22}\\))"),
                                        min = 0.0001,
-                                       max = 0.1,
+                                       max = 0.01,
                                        value = .004, step = .0001)
                     )),
                 
