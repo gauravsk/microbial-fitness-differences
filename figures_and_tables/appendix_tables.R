@@ -56,7 +56,7 @@ table_s2.1 <- knitr::kable(to_print, format = "latex", booktabs = T, escape = F)
 # text of the manuscript. 
 
 # first, import the Rdata file generated in figure_2.R
-load("figure_2.Rdata")
+load("figures_and_tables/figure_2.Rdata")
 
 # Table S3.1 first ----
 # Make a list that contains the parameter values for Scenarios 1 and 2
@@ -99,7 +99,7 @@ table_C1 <- knitr::kable(to_print, "latex", booktabs = TRUE,
 
 # Now, Table S3.2 ----
 # We need to load the parameter values used to make Figure 3
-load("figure_3.Rdata")
+load("figures_and_tables/figure_3.Rdata")
 
 # The parameters are stored in the object "parameter_vector"
 # from figure_3.Rdata. We can extract elements 13:21 and 25:33,
@@ -125,8 +125,8 @@ table_C2 <- knitr::kable(t(scenario_3_parameters), "latex", booktabs = TRUE, esc
 # Appendix 3 -----
 # Table S3.3
 
-# We need to load the parameter values used to make Figure 3
-load("figure_S3.2.Rdata")
+# We need to load the parameter values used to make Figure S3.2
+load("figures_and_tables/figure_S3.2.Rdata")
 
 # As above, the parameters are stored in the object "parameter_vector"
 # from figure_S3.2.Rdata We can extract elements 13:21 and 25:33,
@@ -152,5 +152,5 @@ table_C3 <- knitr::kable(t(scenario_S3_2_parameters), "latex", booktabs = TRUE, 
 # Appendices 4 and 5 do not have any tables.
 
 # save image -------
-save.image(file ="manuscript/code/appendix_figures.Rdata")
+save.image(file ="figures_and_tables/appendix_tables.Rdata")
 

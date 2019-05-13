@@ -151,6 +151,6 @@ coex_cone_scenarioS3.b <- make_coex_cone_w_scenarios(which_base = coex_cone_for_
   scale_color_manual(values = "white") 
 coex_cone_scenarioS3.b
 
-save.image("figures_and_tables/figure_S3.3.Rdata")
-ggsave(filename = "figures_and_tables/figures/figure-S3.3.pdf", plot = coex_cone_scenarioS3.b, height = 5, width = 8)
+ggsave(filename = "figures_and_tables/figures/figure-S3.3.pdf",
+       plot = coex_cone_scenarioS3.b, height = 5, width = 8)
 
