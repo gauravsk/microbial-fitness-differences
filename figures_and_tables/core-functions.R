@@ -240,7 +240,8 @@ predict_interaction_outcome <- function(g1, g2,
                                         m1A, m1B, m2A, m2B, 
                                         vA1, vA2, vB1, vB2,
                                         qA, qB,
-                                        make_trajectory = TRUE) {
+                                        make_trajectory = TRUE,
+                                        for_app = FALSE) {
   
   intrinsic_growths <- lowdens_grs(g1, g2)
   alpha_matrices <- calculate_alphas(g1, g2, c11, c12, c21, c22,
@@ -263,8 +264,15 @@ predict_interaction_outcome <- function(g1, g2,
                                                 intrinsic_growths = intrinsic_growths)
   
   predicted_outcome <- coex_outcome(niche_diff = rho, fitness_diff = fitness_ratio)
-  predicted_outcome_micr <- coex_outcome(niche_diff = rho_micr, fitness_diff = fitness_ratio_micr)
-  predicted_outcome_comp <- coex_outcome(niche_diff = rho_comp, fitness_diff = fitness_ratio_comp)
+  
+  if(for_app) {
+    predicted_outcome_micr <- coex_outcome(niche_diff = rho_micr, fitness_diff = fitness_ratio_micr)
+    predicted_outcome_comp <- coex_outcome(niche_diff = rho_comp, fitness_diff = fitness_ratio_comp)
+  } else {
+    predicted_outcome_micr <- "Empty"
+    predicted_outcome_comp <- "Empty"
+    
+  }
   
   bevers_I <- round(m1A+m2B-m1B-m2A, digits = 5)
   bevers_stabilization = -0.5*bevers_I

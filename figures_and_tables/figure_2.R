@@ -12,7 +12,7 @@ library(kableExtra)
 library(magick)
 
 ### Import to make coexistence cone base plot ---------
-source("core-functions.R")
+source("figures_and_tables/core-functions.R")
 times <- seq(from = 0, to = 85, by = 0.1)
 
 ### GENERATE the TWO PLANT+TWO MICROBE scenarios ----
@@ -207,4 +207,6 @@ figure_2 <- figure_2A /
 # Appendix S3. 
 save.image(file = "figure_2.Rdata")
 
+# Save the image as a PDF
+ggsave("figures_and_tables/figures/figure-2.pdf", figure_2, width = 8, height = 7, units = "in")
 

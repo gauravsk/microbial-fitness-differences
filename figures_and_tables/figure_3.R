@@ -11,7 +11,7 @@ library(patchwork)
 library(deSolve)
 
 
-source("core-functions.R")
+source("figures_and_tables/core-functions.R")
 
 # Define the parameter vector
 # This will have parameters for 3 plant species and 3 associated microbes
@@ -173,3 +173,7 @@ figure_3
 # be used to make the tables of parameter values in 
 # Appendix S3. 
 save.image(file = "figure_3.Rdata")
+
+# Save the image as a PDF
+
+ggsave("figures_and_tables/figures/figure-3.pdf", figure_3, width = 8, height = 4.5, units = "in")

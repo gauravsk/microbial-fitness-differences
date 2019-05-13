@@ -8,14 +8,17 @@ rm(list = ls())
 
 library(tidyverse)
 library(magick)
+# also requires the package emdbook (install.packages("emdbook"))
 
-source("core-functions.R")
+source("figures_and_tables/core-functions.R")
 
 # Make a vector of numbers from 10^-1.5 to 10^1.5,
 # log-distributed.
 # This vector will get used to set the values of resource replacement
 # rate, to simulate a fertility gradient.
 itervec <- emdbook::lseq(from = 10^-1.5, to = 10^1.5, length.out = 1000)
+
+# Make empty vectors to hold the output from a for-loop that iterates over itervec
 rhos_vec <- numeric(length(itervec))
 fitdiff <- numeric(length(itervec))
 rhos_c_vec <- numeric(length(itervec))
@@ -83,3 +86,11 @@ figure_4b <- ggplot(relative_fx_1) +
 
 # NOTE! In the manuscript, this figure_4b generated above is combined with a 
 # cartoon diagram of the model made outside of R.
+
+# Save the image as a PDF:
+ggsave(filename = "figures_and_tables/figures/figure-4b.pdf", plot = figure_4b, height = 12, width = 12)
+
+# Combine the two files (figure-4a.pdf and figure-4b.pdf) into one using a system call to pdfjam.
+# The following commented line only works provided the file paths are accurate.
+
+system("pdfjam ~/grad/manuscripts/kandlikar-etal-psf-theory/figures_and_tables/figures/figure-4a.pdf ~/grad/manuscripts/kandlikar-etal-psf-theory/figures_and_tables/figures/figure-4b.pdf --nup 2x1 --landscape --outfile ~/grad/manuscripts/kandlikar-etal-psf-theory/figures_and_tables/figures/figure-4.pdf")
