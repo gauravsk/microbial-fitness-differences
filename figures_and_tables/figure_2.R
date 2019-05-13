@@ -205,7 +205,7 @@ figure_2 <- figure_2A /
 # Save the Environment as figure_2.RData, because it will
 # be used to make the tables of parameter values in 
 # Appendix S3. 
-save.image(file = "figure_2.Rdata")
+save.image(file = "figures_and_tables/figure_2.Rdata")
 
 # Save the image as a PDF
 ggsave("figures_and_tables/figures/figure-2.pdf", figure_2, width = 8, height = 7, units = "in")

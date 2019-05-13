@@ -172,7 +172,7 @@ figure_3
 # Save the Environment as figure_3.RData, because it will
 # be used to make the tables of parameter values in 
 # Appendix S3. 
-save.image(file = "figure_3.Rdata")
+save.image(file = "figures_and_tables/figure_3.Rdata")
 
 # Save the image as a PDF
 

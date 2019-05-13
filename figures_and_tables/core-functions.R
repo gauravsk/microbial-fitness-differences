@@ -1,7 +1,7 @@
 #### Header material ---------
 ### Final set of analyses for microbe/competition theory MS
-### Gaurav Kandlikar
-### Last edit: 18 April 2019  
+### Gaurav Kandlikar, gaurav.kandlikar@gmail.com
+### Last edit: 13 May 2019  
 
 ### This file includes general purpose functions that 
 ### get used to make various figures and tables 
@@ -24,8 +24,8 @@ theme_gsk <- function() {
     ) 
 }
 
-# Make the "coexistence cone" used in Figure 2 
-# Define vectors for niche differences and the corresponding 
+# Make the "coexistence cone" used in Figure 2 -------
+# First, define vectors for niche differences and the corresponding 
 # min/max fitness difference that permits coexistence
 
 niche_differentiation <- seq(from = 0, to = 1, by = 0.001)
@@ -37,7 +37,7 @@ df <- data.frame(niche_diff = niche_differentiation,
                  min_fitness_ratio = fitness_ratio_min,
                  max_fitness_ratio = fitness_ratio_max)
 
-# make the plot
+# Now, use the dataframe above to make the plot
 coex_cone_truncated <- ggplot(data = df) + 
   geom_ribbon(aes(x = niche_diff, ymin = min_fitness_ratio, 
                   ymax = max_fitness_ratio)) +
@@ -58,7 +58,7 @@ coex_cone_truncated <- ggplot(data = df) +
         axis.title.x = element_text(size = 15))
 
 
-# Define a function that adds scenarios onto a Coexistenice Cone plot 
+# Define a function that adds scenarios onto a coexistence cone plot  -----
 # Inputs to the function are:
 # which_base: choose whether to use coex_cone_truncated or coex_cone
 # list_of_scenarios: a list created out of the outputs of the function 'predict_interaction_outcome'
@@ -92,7 +92,7 @@ make_coex_cone_w_scenarios <- function(list_of_scenarios,
   
 }
 
-# Define a function that plots trajectories from scenarios
+# Define a function that plots trajectories from scenarios ----
 # inputs are as named; 
 # list_of_scenarios is a list made out of the output of 
 # the function predict_interaction_outcomes()
@@ -127,16 +127,24 @@ plot_trajectories <- function(list_of_scenarios, ylab_text = "Population size",
 }
 
 
-# Microbe Density Based Model ----------
-# Define functions that simulate dynamics and
+
+
+# Now, functions that simulate dynamics and
 # calculate the various metrics (e.g. alphas, rho, ..)
-# for the PHENOMENOLOGICAL COMPETITION MODEL
+# for the PHENOMENOLOGICAL COMPETITION MODEL -----------------
 
 # setup global variables 
 times <- seq(from = 0, to = 150, by = 0.1)
 init <- c("Ni" = 40, "Nj" = 50, "Sk" = 15, "Sl" = 15)
 
 # calculate the low density of growth rates for each species
+# Note that this fucntion is not strictly necessary for the 
+# version of the model in the main text, because microbes 
+# have no intrinsic growth (so r1 = g1). 
+# This function is most helpful for simulating dynamics of the model
+# in which microbes can grow independently of plants, which was in a previous
+# version of this paper.
+
 lowdens_grs <- function(g1, g2, ...) {
   r1 <- g1
   r2 <- g2
@@ -145,6 +153,10 @@ lowdens_grs <- function(g1, g2, ...) {
 }
 
 # calculate the interaction matrix for each species pair
+# this function calculates each pairwise interaction parameter alpha_ij
+# according to Eqn. 7 of the main text. 
+# It returns the net interaction terms (both comp + microbe effects),
+# and also the interactions via competition and microbes separately. 
 calculate_alphas <- function(g1, g2, 
                              c11, c12, c21, c22,
                              m1A, m1B, m2A, m2B, 
@@ -183,13 +195,16 @@ calculate_alphas <- function(g1, g2,
   colnames(interaction_matrix_m) <- c("p1", "p2")
   rownames(interaction_matrix_m) <- c("p1", "p2")
   
+  # return all three interaction matrices
   return(list(interaction_matrix = interaction_matrix,
               interaction_matrix_c = interaction_matrix_c,
               interaction_matrix_m = interaction_matrix_m))
   
 }
 
+
 # calculate the niche overlap given a matrix of alphas
+# This function follows Eqn. 8 of the paper
 calculate_rho <- function(alpha_matrix){
   niche_difference <- sqrt((alpha_matrix["p1","p2"]*alpha_matrix["p2","p1"])/
          (alpha_matrix["p1","p1"]*alpha_matrix["p2","p2"]))
@@ -197,6 +212,7 @@ calculate_rho <- function(alpha_matrix){
 }
 
 # calculate fitness ratio Kj/Ki given a matrix of alphas
+# This function follows Eqn. 9 of the paper
 calculate_fitness_ratio <- function(alpha_matrix, intrinsic_growths) {
 
   fitness_ratio <- sqrt((alpha_matrix["p1","p1"]*alpha_matrix["p1","p2"])/
@@ -206,6 +222,7 @@ calculate_fitness_ratio <- function(alpha_matrix, intrinsic_growths) {
 }
 
 # determine whether or not the plants with coexist 
+# This function follows the inequality in Eqn. 10 of the paper
 coex_outcome <- function(niche_diff, fitness_diff) {
   if (niche_diff < fitness_diff & fitness_diff < 1/niche_diff) {
     "coexist"
@@ -250,6 +267,8 @@ predict_interaction_outcome <- function(g1, g2,
                                      vA1, vA2, vB1, vB2,
                                      qA, qB)
   
+  # Calculate the niche and fitness differences,
+  # including these values for each mechanism independently
   rho <-  calculate_rho(alpha_matrix = alpha_matrices$interaction_matrix)
   
   rho_comp <- calculate_rho(alpha_matrix = alpha_matrices$interaction_matrix_c)
@@ -264,8 +283,11 @@ predict_interaction_outcome <- function(g1, g2,
   fitness_ratio_micr <- calculate_fitness_ratio(alpha_matrix = alpha_matrices$interaction_matrix_m, 
                                                 intrinsic_growths = intrinsic_growths)
   
+  # Given the niche and fitness differences, will the species coexist?
   predicted_outcome <- coex_outcome(niche_diff = rho, fitness_diff = fitness_ratio)
   
+  
+  # For the Shiny app, need to return a few extra points....
   if(for_app) {
     predicted_outcome_micr <- coex_outcome(niche_diff = rho_micr, fitness_diff = fitness_ratio_micr)
     predicted_outcome_comp <- coex_outcome(niche_diff = rho_comp, fitness_diff = fitness_ratio_comp)
@@ -274,23 +296,23 @@ predict_interaction_outcome <- function(g1, g2,
     predicted_outcome_comp <- "Empty"
     
   }
-  
-  bevers_I <- round(m1A+m2B-m1B-m2A, digits = 5)
-  bevers_stabilization = -0.5*bevers_I
-  bevers_fitdiff <- round(0.5*(m1A+m1B-m2A-m2B), digits = 5)
-  
-  parameter_vector <- c(g1 = g1, g2 = g2, 
-                        c11 = c11, c12 = c12, c21 = c21, c22 = c22, 
-                        m1A = m1A, m1B = m1B, m2A = m2A, m2B = m2B, 
-                        vA1 = vA1, vA2 = vA2, vB1 = vB1, vB2 = vB2,
-                        qA = qA, qB = qB)
+
+  # Simulate the dynamics if there is a call for the trajectories...
   if(make_trajectory == TRUE) {
+    parameter_vector <- c(g1 = g1, g2 = g2, 
+                          c11 = c11, c12 = c12, c21 = c21, c22 = c22, 
+                          m1A = m1A, m1B = m1B, m2A = m2A, m2B = m2B, 
+                          vA1 = vA1, vA2 = vA2, vB1 = vB1, vB2 = vB2,
+                          qA = qA, qB = qB)
+    
     trajectory <-  data.frame(lsoda(y = init, times = times, 
                                     func = modelv1.0, parms = parameter_vector)) %>% 
       select(-Sk,-Sl) %>% gather(., species, size, -time)
   } else {
     trajectory <- "not generated"
   }
+  
+  # Return everything in a big list
   to_return <- list(intrinsic_growths = intrinsic_growths,
                     alpha_matrix = alpha_matrices$interaction_matrix,
                     alpha_matrix_c = alpha_matrices$interaction_matrix_c,
@@ -304,9 +326,6 @@ predict_interaction_outcome <- function(g1, g2,
                     coex_outcome = predicted_outcome,
                     coex_outcome_micr = predicted_outcome_micr,
                     coex_outcome_comp = predicted_outcome_comp,
-                    bevers_I = bevers_I,
-                    bevers_stabilization = bevers_stabilization,
-                    bevers_fitdiff = bevers_fitdiff,
                     rho_comp = rho_comp, 
                     rho_micr = rho_micr)
   
@@ -314,136 +333,17 @@ predict_interaction_outcome <- function(g1, g2,
 }
 
 
-# Multispecies competition model -----
-# First, we define the functions used to generate Figure S4.1 
-# in Appendix S4.
-# calculate the low density of growth rates
-f2_lowdens_grs <- function(g1, g2, 
-                           m1A, m1B, m2A, m2B, m1C, m2C, 
-                          qA, qB, qC, ...) {
-  r_i <- g1
-  r_j <- g2
-  to_return <- c("r1" = r_i, "r2" = r_j)
-  return(to_return)
-}
-
-# calculate the alphas matrix
-f2_calculate_alphas <- function(g1, g2, 
-                                c11, c12, c21, c22,
-                                m1A, m1B, m2A, m2B, m1C, m2C,
-                                vA1, vA2, vB1, vB2, vC1, vC2,
-                                fA, fB, fC, qA, qB, qC) {
-  
-  plant_rs <- f2_lowdens_grs(g1, g2, m1A, m1B, m2A, m2B, m1C, m2C, fA, fB, qC, qA, qB, qC)
-  
-  alpha_ii <- (g1*(c11 - (m1A*vA1/qA + m1B*vB1/qB + m1C*vC1/qC)))/plant_rs["r1"]
-  alpha_ij <- (g1*(c12 - (m1A*vA2/qA + m1B*vB2/qB + m1C*vC2/qC)))/plant_rs["r1"]
-  alpha_jj <- (g2*(c22 - (m2A*vA2/qA + m2B*vB2/qB + m2C*vC2/qC)))/plant_rs["r2"]
-  alpha_ji <- (g2*(c21 - (m2A*vA1/qA + m2B*vB1/qB + m2C*vC1/qC)))/plant_rs["r2"]
-  interaction_matrix <- matrix(c(alpha_ii, alpha_ij,
-                                 alpha_ji, alpha_jj), byrow = TRUE, ncol = 2)
-  colnames(interaction_matrix) <- c("p1", "p2")
-  rownames(interaction_matrix) <- c("p1", "p2")
-  
-  # Due to competition alone
-  alpha_ii_c <- (g1*(c11 - (0)))/plant_rs["r1"]
-  alpha_ij_c <- (g1*(c12 - (0)))/plant_rs["r1"]
-  alpha_jj_c <- (g2*(c22 - (0)))/plant_rs["r2"]
-  alpha_ji_c <- (g2*(c21 - (0)))/plant_rs["r2"]
-  interaction_matrix_c <- matrix(c(alpha_ii_c, alpha_ij_c,
-                                   alpha_ji_c, alpha_jj_c), byrow = TRUE, ncol = 2)
-  colnames(interaction_matrix_c) <- c("p1", "p2")
-  rownames(interaction_matrix_c) <- c("p1", "p2")
-  
-  # Due to microbes alone
-  alpha_ii_m <- (g1*(0 - (m1A*vA1/qA + m1B*vB1/qB + m1C*vC1/qC)))/plant_rs["r1"]
-  alpha_ij_m <- (g1*(0 - (m1A*vA2/qA + m1B*vB2/qB + m1C*vC2/qC)))/plant_rs["r1"]
-  alpha_jj_m <- (g2*(0 - (m2A*vA2/qA + m2B*vB2/qB + m2C*vC2/qC)))/plant_rs["r2"]
-  alpha_ji_m <- (g2*(0 - (m2A*vA1/qA + m2B*vB1/qB + m2C*vC1/qC)))/plant_rs["r2"]
-  interaction_matrix_m <- matrix(c(alpha_ii_m, alpha_ij_m,
-                                   alpha_ji_m, alpha_jj_m), byrow = TRUE, ncol = 2)
-  colnames(interaction_matrix_m) <- c("p1", "p2")
-  rownames(interaction_matrix_m) <- c("p1", "p2")
-  
-  return(list(interaction_matrix = interaction_matrix,
-              interaction_matrix_c = interaction_matrix_c,
-              interaction_matrix_m = interaction_matrix_m))
-  
-}
 
 
-# write a function that will return the trajectory of the syste
-# this gets used by a call to deSolve::ode()
-f2_modelv1.0 <-  function(t, y, parms) {
-  
-  with(as.list(c(y, parms)),{
-    
-    dNi <- g1*(1 - c11*Ni - c12*Nj + m1A*Sk + m1B*Sm + m1C*Sb)*Ni
-    dNj <- g2*(1 - c22*Nj - c21*Ni + m2A*Sk + m2B*Sm + m2C*Sb)*Nj
-    
-    dSk <- (vA1*Ni + vA2*Nj - qA*Sk)*Sk
-    dSm <- (vB1*Ni + vB2*Nj - qB*Sm)*Sm
-    dSb <- (vC1*Ni + vC2*Nj - qC*Sb)*Sb
-    
-    
-    list(c(dNi,dNj,dSk,dSm,dSb))
-  })
-  
-}
 
-# a master-function that uses all of the functions above to analyze the system
-f2_predict_interaction_outcome <- function(g1, g2, 
-                                           c11, c12, c21, c22,
-                                           m1A, m1B, m2A, m2B, m1C, m2C,
-                                           vA1, vA2, vB1, vB2, vC1, vC2,
-                                           fA, fB, fC, qA, qB, qC) {
-  
-  intrinsic_growths <- f2_lowdens_grs(g1, g2, 
-                                      m1A, m1B, m2A, m2B, m1C, m2C, 
-                                      fA, fB, fC, qC, qA, qB, qC)
-  alpha_matrices <- f2_calculate_alphas(g1, g2, 
-                                        c11, c12, c21, c22,
-                                        m1A, m1B, m2A, m2B, m1C, m2C,
-                                        vA1, vA2, vB1, vB2, vC1, vC2,
-                                        fA, fB, fC, qA, qB, qC)
-  
-  rho <-  calculate_rho(alpha_matrix = alpha_matrices$interaction_matrix)
-  
-  rho_comp <- calculate_rho(alpha_matrix = alpha_matrices$interaction_matrix_c)
-  rho_micr <- calculate_rho(alpha_matrix = alpha_matrices$interaction_matrix_m)
-  
-  
-  fitness_ratio <- calculate_fitness_ratio(alpha_matrix = alpha_matrices$interaction_matrix, 
-                                           intrinsic_growths = intrinsic_growths)
-  predicted_outcome <- coex_outcome(niche_diff = rho, fitness_diff = fitness_ratio)
-  bevers_I <- m1A+m2B-m1B-m2A
-  
-  parameter_vector <- c(g1 = g1, g2 = g2, 
-                        c11 = c11, c12 = c12, c21 = c21, c22 = c22, 
-                        m1A = m1A, m1B = m1B, m2A = m2A, m2B = m2B, m1C = m1C, m2C = m2C,
-                        vA1 = vA1, vA2 = vA2, vB1 = vB1, vB2 = vB2, vC1 = vC1, vC2 = vC2,
-                        qA = qA, qB = qA, qC = qC)
-  trajectory <-  data.frame(lsoda(y = f2_init, times = times, 
-                                  func = f2_modelv1.0, parms = parameter_vector)) %>% 
-    select(-Sk,-Sm, -Sb) %>% gather(., species, size, -time)
-  
-  to_return <- list(intrinsic_growths = intrinsic_growths,
-                    alpha_matrix = alpha_matrices$interaction_matrix,
-                    alpha_matrix_c = alpha_matrices$interaction_matrix_c,
-                    alpha_matrix_m = alpha_matrices$interaction_matrix_m,
-                    
-                    rho = rho,
-                    fitness_ratio = fitness_ratio,
-                    coex_outcome = predicted_outcome,
-                    bevers_I = bevers_I,
-                    trajectory = trajectory,
-                    rho_comp = rho_comp, 
-                    rho_micr = rho_micr)
-  
-  return(to_return)
-}
 
-# Now, we define the function used to simulate a three-species system
+
+
+
+
+
+# Define functions to simulate a three-species system ----------
+
 # I call this function model_RPS because it is used to simulate the
 # rock-paper-scissors scenario.
 model_RPS <-  function(t, y, parms) {
@@ -464,10 +364,15 @@ model_RPS <-  function(t, y, parms) {
   
 }
 
-# Resource competition model Model ----------
-# Define functions that simulate dynamics and
-# calculate the various metrics (e.g. alphas, rho, ..)
-# for the RESOURCE COMPETITION MODEL
+
+
+
+
+
+
+# Define functions for the resource competition model  ----------
+
+# Caculate low-density growth rates
 lowdens_grs_RC <- function(u1l, u2l, u1n, u2n,
                            el, en, alpha_l, alpha_n,
                            m1A, m2A, m1B, m2B, qA, qB,
@@ -478,6 +383,8 @@ lowdens_grs_RC <- function(u1l, u2l, u1n, u2n,
   return(to_return)
 }
 
+# Calculate the pairwise interaction coefficient alpha'_ij
+# This function follows Eqn. 11 of the main text. 
 calculate_alphas_RC <- function(u1l, u2l, u1n, u2n,
                                 el, en, alpha_l, alpha_n,
                                 m1A, m2A, m1B, m2B, qA, qB,
@@ -552,11 +459,11 @@ predict_interaction_outcome_RC <- function(u1l, u2l, u1n, u2n,
   rho_micr <- calculate_rho(alpha_matrix = alpha_matrices$interaction_matrix_m)
   
   fitness_ratio <- calculate_fitness_ratio(alpha_matrix = alpha_matrices$interaction_matrix, 
-                                              intrinsic_growths = plant_rs)
+                                           intrinsic_growths = plant_rs)
   fitness_ratio_comp <- calculate_fitness_ratio(alpha_matrix = alpha_matrices$interaction_matrix_c, 
-                                                   intrinsic_growths = plant_rs)
+                                                intrinsic_growths = plant_rs)
   fitness_ratio_micr <- calculate_fitness_ratio(alpha_matrix = alpha_matrices$interaction_matrix_m, 
-                                                   intrinsic_growths = plant_rs)
+                                                intrinsic_growths = plant_rs)
   
   predicted_outcome <- coex_outcome(niche_diff = rho, fitness_diff = fitness_ratio)
   to_return <- list(intrinsic_growths = plant_rs,
@@ -570,6 +477,139 @@ predict_interaction_outcome_RC <- function(u1l, u2l, u1n, u2n,
                     coex_outcome = predicted_outcome,
                     rho_comp = rho_comp, 
                     rho_micr = rho_micr)
+  return(to_return)
+}
+
+
+
+
+
+
+
+
+
+
+# Define the functions used to generate Figure S4.1 in Appendix S4 ---------
+# This set of functions considers a system in which each of two plant species
+# cultivates a distinct microbial community, but there is also a third
+# microbial community which is a generalist that can grow with and affect
+# both focal plant species. 
+
+# calculate the alphas matrix -- need a different function
+# because the existing calculate_alphas only works with 
+# two distinct microbial communities.
+f2_calculate_alphas <- function(g1, g2, 
+                                c11, c12, c21, c22,
+                                m1A, m1B, m2A, m2B, m1C, m2C,
+                                vA1, vA2, vB1, vB2, vC1, vC2,
+                                fA, fB, fC, qA, qB, qC) {
+  
+  plant_rs <- lowdens_grs(g1, g2, m1A, m1B, m2A, m2B, m1C, m2C, fA, fB, qC, qA, qB, qC)
+  
+  alpha_ii <- (g1*(c11 - (m1A*vA1/qA + m1B*vB1/qB + m1C*vC1/qC)))/plant_rs["r1"]
+  alpha_ij <- (g1*(c12 - (m1A*vA2/qA + m1B*vB2/qB + m1C*vC2/qC)))/plant_rs["r1"]
+  alpha_jj <- (g2*(c22 - (m2A*vA2/qA + m2B*vB2/qB + m2C*vC2/qC)))/plant_rs["r2"]
+  alpha_ji <- (g2*(c21 - (m2A*vA1/qA + m2B*vB1/qB + m2C*vC1/qC)))/plant_rs["r2"]
+  interaction_matrix <- matrix(c(alpha_ii, alpha_ij,
+                                 alpha_ji, alpha_jj), byrow = TRUE, ncol = 2)
+  colnames(interaction_matrix) <- c("p1", "p2")
+  rownames(interaction_matrix) <- c("p1", "p2")
+  
+  # Due to competition alone
+  alpha_ii_c <- (g1*(c11 - (0)))/plant_rs["r1"]
+  alpha_ij_c <- (g1*(c12 - (0)))/plant_rs["r1"]
+  alpha_jj_c <- (g2*(c22 - (0)))/plant_rs["r2"]
+  alpha_ji_c <- (g2*(c21 - (0)))/plant_rs["r2"]
+  interaction_matrix_c <- matrix(c(alpha_ii_c, alpha_ij_c,
+                                   alpha_ji_c, alpha_jj_c), byrow = TRUE, ncol = 2)
+  colnames(interaction_matrix_c) <- c("p1", "p2")
+  rownames(interaction_matrix_c) <- c("p1", "p2")
+  
+  # Due to microbes alone
+  alpha_ii_m <- (g1*(0 - (m1A*vA1/qA + m1B*vB1/qB + m1C*vC1/qC)))/plant_rs["r1"]
+  alpha_ij_m <- (g1*(0 - (m1A*vA2/qA + m1B*vB2/qB + m1C*vC2/qC)))/plant_rs["r1"]
+  alpha_jj_m <- (g2*(0 - (m2A*vA2/qA + m2B*vB2/qB + m2C*vC2/qC)))/plant_rs["r2"]
+  alpha_ji_m <- (g2*(0 - (m2A*vA1/qA + m2B*vB1/qB + m2C*vC1/qC)))/plant_rs["r2"]
+  interaction_matrix_m <- matrix(c(alpha_ii_m, alpha_ij_m,
+                                   alpha_ji_m, alpha_jj_m), byrow = TRUE, ncol = 2)
+  colnames(interaction_matrix_m) <- c("p1", "p2")
+  rownames(interaction_matrix_m) <- c("p1", "p2")
+  
+  return(list(interaction_matrix = interaction_matrix,
+              interaction_matrix_c = interaction_matrix_c,
+              interaction_matrix_m = interaction_matrix_m))
+  
+}
+
+
+# write a function that will return the trajectory of the syste
+# this gets used by a call to deSolve::ode()
+f2_modelv1.0 <-  function(t, y, parms) {
+  
+  with(as.list(c(y, parms)),{
+    
+    dNi <- g1*(1 - c11*Ni - c12*Nj + m1A*Sk + m1B*Sm + m1C*Sb)*Ni
+    dNj <- g2*(1 - c22*Nj - c21*Ni + m2A*Sk + m2B*Sm + m2C*Sb)*Nj
+    
+    dSk <- (vA1*Ni + vA2*Nj - qA*Sk)*Sk
+    dSm <- (vB1*Ni + vB2*Nj - qB*Sm)*Sm
+    dSb <- (vC1*Ni + vC2*Nj - qC*Sb)*Sb
+    
+    
+    list(c(dNi,dNj,dSk,dSm,dSb))
+  })
+  
+}
+
+# a master-function that uses all of the functions above to analyze the system
+f2_predict_interaction_outcome <- function(g1, g2, 
+                                           c11, c12, c21, c22,
+                                           m1A, m1B, m2A, m2B, m1C, m2C,
+                                           vA1, vA2, vB1, vB2, vC1, vC2,
+                                           fA, fB, fC, qA, qB, qC) {
+  
+  intrinsic_growths <- lowdens_grs(g1, g2, 
+                                      m1A, m1B, m2A, m2B, m1C, m2C, 
+                                      fA, fB, fC, qC, qA, qB, qC)
+  alpha_matrices <- f2_calculate_alphas(g1, g2, 
+                                        c11, c12, c21, c22,
+                                        m1A, m1B, m2A, m2B, m1C, m2C,
+                                        vA1, vA2, vB1, vB2, vC1, vC2,
+                                        fA, fB, fC, qA, qB, qC)
+  
+  rho <-  calculate_rho(alpha_matrix = alpha_matrices$interaction_matrix)
+  
+  rho_comp <- calculate_rho(alpha_matrix = alpha_matrices$interaction_matrix_c)
+  rho_micr <- calculate_rho(alpha_matrix = alpha_matrices$interaction_matrix_m)
+  
+  
+  fitness_ratio <- calculate_fitness_ratio(alpha_matrix = alpha_matrices$interaction_matrix, 
+                                           intrinsic_growths = intrinsic_growths)
+  predicted_outcome <- coex_outcome(niche_diff = rho, fitness_diff = fitness_ratio)
+  bevers_I <- m1A+m2B-m1B-m2A
+  
+  parameter_vector <- c(g1 = g1, g2 = g2, 
+                        c11 = c11, c12 = c12, c21 = c21, c22 = c22, 
+                        m1A = m1A, m1B = m1B, m2A = m2A, m2B = m2B, m1C = m1C, m2C = m2C,
+                        vA1 = vA1, vA2 = vA2, vB1 = vB1, vB2 = vB2, vC1 = vC1, vC2 = vC2,
+                        qA = qA, qB = qA, qC = qC)
+  trajectory <-  data.frame(lsoda(y = f2_init, times = times, 
+                                  func = f2_modelv1.0, parms = parameter_vector)) %>% 
+    select(-Sk,-Sm, -Sb) %>% gather(., species, size, -time)
+  
+  to_return <- list(intrinsic_growths = intrinsic_growths,
+                    alpha_matrix = alpha_matrices$interaction_matrix,
+                    alpha_matrix_c = alpha_matrices$interaction_matrix_c,
+                    alpha_matrix_m = alpha_matrices$interaction_matrix_m,
+                    
+                    rho = rho,
+                    fitness_ratio = fitness_ratio,
+                    coex_outcome = predicted_outcome,
+                    bevers_I = bevers_I,
+                    trajectory = trajectory,
+                    rho_comp = rho_comp, 
+                    rho_micr = rho_micr)
+  
   return(to_return)
 }
 
