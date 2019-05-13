@@ -12,7 +12,7 @@ library(patchwork)
 library(kableExtra)
 library(magick)
 library(emdbook)
-source("core-functions.R")
+source("figures_and_tables/core-functions.R")
 
 
 # Appendix 1 does not have any tables. 

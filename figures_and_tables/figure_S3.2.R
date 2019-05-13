@@ -10,7 +10,7 @@ rm(list = ls())
 library(patchwork)
 library(deSolve)
 library(tidyverse)
-source("core-functions.R")
+source("figures_and_tables/core-functions.R")
 
 ## NOTE! 
 # The following code is very similar to the code in figure_3.R
@@ -172,4 +172,7 @@ figure_S3.2 <- all_three +
 # be used to make the tables of parameter values in 
 # Appendix S3. 
 save.image(file = "figure_S3.2.Rdata")
+
+# Save the image as a PDF
+ggsave("figures_and_tables/figures/figure-S3.2.pdf", figure_S3.2, width = 8, height = 4.5, units = "in")
 

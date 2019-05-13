@@ -7,7 +7,7 @@
 rm(list = ls())
 library(tidyverse)
 library(patchwork)
-source("core-functions.R")
+source("figures_and_tables/core-functions.R")
 
 # Note: The code here is similar to the code in figure_4.R.
 
@@ -109,3 +109,6 @@ figure_S5.2a <- ggplot(relative_fx) +
 figure_S5.2 <- figure_S5.2a + labs(tag = "A") +  
   figure_S5.2b + labs(tag = "B") + 
   plot_layout(widths = c(2,3))
+
+ggsave(filename = "figures_and_tables/figures/figure_S5.2.pdf", plot = figure_S5.2, 
+       height = 5, width = 10, units = "in")

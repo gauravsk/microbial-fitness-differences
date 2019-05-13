@@ -65,7 +65,8 @@ coex_cone_truncated <- ggplot(data = df) +
 # lab_adj: how far to move the label (in the x-direction) from the ND/FD point
 # scenario_names: vector of labels for each scenario
 make_coex_cone_w_scenarios <- function(list_of_scenarios,
-                                       lab_adj = 0.03, scenario_names) {
+                                       lab_adj = 0.03, scenario_names,
+                                       which_base = coex_cone_truncated) {
   # list_of_scenarios is a list of outputs from the function predict_interaction_outcome() 
   # extract relevant values from the list:
   rhos <- sapply(list_of_scenarios, function(x) 1-x$rho, simplify = T)
@@ -415,8 +416,6 @@ f2_predict_interaction_outcome <- function(g1, g2,
   fitness_ratio <- calculate_fitness_ratio(alpha_matrix = alpha_matrices$interaction_matrix, 
                                            intrinsic_growths = intrinsic_growths)
   predicted_outcome <- coex_outcome(niche_diff = rho, fitness_diff = fitness_ratio)
-  predicted_outcome_m <- coex_outcome(niche_diff = rho_micr, fitness_diff = fitness_ratio_micr)
-  predicted_outcome_c <- coex_outcome(niche_diff = rho_comp, fitness_diff = fitness_ratio_comp)
   bevers_I <- m1A+m2B-m1B-m2A
   
   parameter_vector <- c(g1 = g1, g2 = g2, 
@@ -436,8 +435,6 @@ f2_predict_interaction_outcome <- function(g1, g2,
                     rho = rho,
                     fitness_ratio = fitness_ratio,
                     coex_outcome = predicted_outcome,
-                    coex_outcome_m = predicted_outcome_m,
-                    coex_outcome_c = predicted_outcome_c,
                     bevers_I = bevers_I,
                     trajectory = trajectory,
                     rho_comp = rho_comp, 

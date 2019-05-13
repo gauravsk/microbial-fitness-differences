@@ -1,6 +1,8 @@
 # Appendix D ---------
 # Partitioning microbe effects into those of specialist pathogens and generalist mutualists
-source("core-functions.R")
+rm(list = ls())
+
+source("figures_and_tables/core-functions.R")
 
 times <- seq(from = 0, to = 400, by = 0.1)
 
@@ -51,12 +53,12 @@ table_D1 <- knitr::kable(to_print, "latex", booktabs = TRUE,
   kable_styling(latex_options = c("striped", "scale_down"))
 
 
-figure_D1_b <- make_coex_cone_w_scenarios(list_of_scenarios = list(scenario_D1_pathOnly_outcome, scenario_D1_complete_outcome), 
+figure_S4_1_b <- make_coex_cone_w_scenarios(list_of_scenarios = list(scenario_D1_pathOnly_outcome, scenario_D1_complete_outcome), 
                                           lab_adj = .1,
                                           scenario_names = c("Pathogens Only", "Pathogens\nand Mutualists")) +
   labs(tag = "B")
 
-figure_D1_c <- ggplot(scenario_D1_pathOnly_outcome$trajectory) + 
+figure_S4_1_c <- ggplot(scenario_D1_pathOnly_outcome$trajectory) + 
   geom_line(aes(x = time, y= size, color = species), size = 1) + 
   scale_color_manual(values = c("black", "red")) + 
   theme_gsk() +
@@ -66,7 +68,7 @@ figure_D1_c <- ggplot(scenario_D1_pathOnly_outcome$trajectory) +
            label = latex2exp::TeX("$N_1$"), size = 5) + 
   theme(legend.position = "none") + 
   labs(tag = "C", subtitle = "Effects of pathogens\nonly") 
-figure_D1_d <- ggplot(scenario_D1_complete_outcome$trajectory) + 
+figure_S4_1_d <- ggplot(scenario_D1_complete_outcome$trajectory) + 
   geom_line(aes(x = time, y= size, color = species), size = 1) + 
   scale_color_manual(values = c("black", "red")) + 
   theme_gsk() + 
@@ -78,7 +80,13 @@ figure_D1_d <- ggplot(scenario_D1_complete_outcome$trajectory) +
   ylim(c(0, 180)) + 
   labs(tag = "D", subtitle = "Effects of pathogens\nand mutualist")
 
-figure_D1_bcd <- figure_D1_b + {figure_D1_c / figure_D1_d} + plot_layout(widths = c(3,1))
+figure_S4_1_bcd <- figure_S4_1_b + {figure_S4_1_c / figure_S4_1_d} + plot_layout(widths = c(3,1))
 
-# NOTE! In the manuscript, this figure_D1_bcd generated above is combined with a 
+# Save image as PDF
+
+ggsave(filename = "figures_and_tables/figures/figure_S4.1_bcd.pdf", plot = figure_S4_1_bcd, 
+       height = 4, width = 7, units = "in")
+
+
+# NOTE! In the manuscript, this figure_S4_1_bcd generated above is combined with a 
 # cartoon diagram of the model made outside of R.

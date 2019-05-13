@@ -10,7 +10,7 @@
 rm(list = ls())
 library(tidyverse)
 
-source("core-functions.R")
+source("figures_and_tables/core-functions.R")
 # Make a vector of numbers from 10^-1.5 to 10^1.5,
 # log-distributed.
 # This vector will get used to set the values of resource replacement
@@ -85,5 +85,9 @@ figure_S5.1 <- ggplot(relative_fx_1) +
   xlab(latex2exp::TeX("Resource replacement rates ($r_l$)")) + 
   theme(axis.title = element_text(size = 15),
         axis.text = element_text(size = 11)) 
+
+# Save image as PDF
+ggsave(filename = "figures_and_tables/figures/figure_S5.1.pdf", plot = figure_S5.1, 
+       height = 6, width = 6, units = "in")
 
 

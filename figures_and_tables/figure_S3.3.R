@@ -4,7 +4,7 @@ rm(list = ls())
 library(patchwork)
 library(deSolve)
 library(tidyverse)
-source("manuscript/code/core-functions.R")
+source("figures_and_tables/core-functions.R")
 
 # Super truncated cone ----------
 # Make the "super truncated" cone, extending from
@@ -151,5 +151,6 @@ coex_cone_scenarioS3.b <- make_coex_cone_w_scenarios(which_base = coex_cone_for_
   scale_color_manual(values = "white") 
 coex_cone_scenarioS3.b
 
-save.image("manuscript/code/figure_coexCone_s3.Rdata")
+save.image("figures_and_tables/figure_S3.3.Rdata")
+ggsave(filename = "figures_and_tables/figures/figure-S3.3.pdf", plot = coex_cone_scenarioS3.b, height = 5, width = 8)
 
