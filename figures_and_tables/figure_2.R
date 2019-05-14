@@ -137,7 +137,7 @@ figure_2A <- coex_cone_truncated +
                arrow = arrow(length = unit(0.01, "npc"), 
                              type = "closed"), linejoin = "mitre", size = 1.8, 
                color = "#CC79A7") + 
-  labs(tag = "A")
+  labs(tag = "(a)")
 
 
 # Now, make Panels 2B-2E using the trajectories from each of the scenario outcomes
@@ -157,7 +157,7 @@ traj_1 <- ggplot(scenario1_outcome_w_and_without) +
   theme(legend.position = "none", 
         strip.background = element_blank(), strip.text.x = element_blank()) +
   ylab("Population Size") + 
-  labs(tag = "B", title = "Scenario 1") + 
+  labs(tag = "(b)", title = "Scenario 1") + 
   annotate("text", y = 85, x =  Inf, hjust = 1, 
            label = latex2exp::TeX("$N_2$"), size = 5) + 
   annotate("text", y = 15, x =  Inf, hjust = 1, 
@@ -173,19 +173,19 @@ traj_1 <- ggplot(scenario1_outcome_w_and_without) +
 # 2D) will have trajectory when only competition operates
 # 2E) will have trajectory when only microbes operate
 traj_2_net <- plot_trajectories(scenario_2_outcome$trajectory, ylab_text = "") + 
-  labs(tag = "E",  title =  "Scenario 2", subtitle = "Net Effect") + 
+  labs(tag = "(e)",  title =  "Scenario 2", subtitle = "Net Effect") + 
   annotate("text", y = 280, x =  Inf, hjust = 1, 
            label = latex2exp::TeX("$N_2$"), size = 5) + 
   annotate("text", y = 220, x =  Inf, hjust = 1, 
            label = latex2exp::TeX("$N_1$"), size = 5) 
 traj_2_microbes <- plot_trajectories(scenario_2_outcome_NOCOMP$trajectory, ylab_text = "") + 
-  labs(tag = "C",  title =  "Scenario 2", subtitle = "Microbes only") + 
+  labs(tag = "(d)",  title =  "Scenario 2", subtitle = "Microbes only") + 
   annotate("text", y = 575, x =  Inf, hjust = 1, 
            label = latex2exp::TeX("$N_2$"), size = 5) + 
   annotate("text", y = 80, x =  Inf, hjust = 1, 
            label = latex2exp::TeX("$N_1$"), size = 5) 
 traj_2_comp <- plot_trajectories(scenario_2_outcome_NOMICR$trajectory, ylab_text = "") + 
-  labs(tag = "D",  title =  "Scenario 2", subtitle = "Competition only") + 
+  labs(tag = "(c)",  title =  "Scenario 2", subtitle = "Competition only") + 
   annotate("text", y = 720, x =  Inf, hjust = 1, 
            label = latex2exp::TeX("$N_1$"), size = 5) + 
   annotate("text", y = 80, x =  Inf, hjust = 1, 
@@ -193,7 +193,7 @@ traj_2_comp <- plot_trajectories(scenario_2_outcome_NOMICR$trajectory, ylab_text
 
 # Put them all together
 figure_2 <- figure_2A / 
-  {traj_1 + {traj_2_microbes + traj_2_comp + traj_2_net} + plot_layout(width = c(1/4, 3/4))} + 
+  {traj_1 + {traj_2_comp + traj_2_micr + traj_2_net} + plot_layout(width = c(1/4, 3/4))} + 
   plot_layout(height = c(2/3, 1/3))
 
 
