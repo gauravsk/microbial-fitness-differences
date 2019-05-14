@@ -4,16 +4,15 @@ ui <- dashboardPage(
   dashboardHeader(title = "Coexistence with competition and plant-soil feedbacks"),
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Dashboard", tabName = "bloop", icon = icon("dashboard")),
-      menuItem("Dashboard2", tabName = "blooper", icon = icon("dashboard"))
-      
+      menuItem("Dashboard", tabName = "tab1", icon = icon("dashboard"))
   )),
   dashboardBody(
     # Boxes need to be put in a row (or column)
     # Tab 1
     tabItems(
-      tabItem(tabName = "bloop",
-              fluidRow(box(actionButton("scenario1_reset", label = "Reset to Scenario 1"),
+      tabItem(tabName = "tab1",
+              fluidRow(box(title = "Note: app under development as of 13 May 2019",
+                           actionButton("scenario1_reset", label = "Reset to Scenario 1"),
                            actionButton("scenario2_reset", label = "Reset to Scenario 2"))),
               fluidRow(
                 # Box of Intrinsic rates ---------
@@ -124,12 +123,8 @@ ui <- dashboardPage(
                 box(width = 4, plotOutput("plot2"))
                 
               )
-      ),
+      )
       
-      tabItem(tabName = "blooper",
-              fluidRow(
-                  h3("test")
-              ))
     )
   )
 )

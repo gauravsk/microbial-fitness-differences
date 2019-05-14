@@ -1,14 +1,14 @@
 library(tidyverse)
 library(patchwork)
 library(deSolve)
-source("../figures_and_tables/core-functions.R")
+source("core-functions-copy.R")
 scenario_1_parameters <- c(g1 = 1, g2 = 1,
                            c11 = 0.003, c12 = 0.0024,
                            c21 = 0.002, c22 = 0.004,
                            m1A = -0.05, m1B = -0.04,
                            m2A = -0.01, m2B = -0.021,
                            vA1 = 0.005, vA2 = 0, vB1 = 0, vB2 = 0.005,
-                           qA = 0.01, qB = 0.01)
+                           qA = 0.01, qB = 0.01, for_app = TRUE)
 
 scenario_2_parameters <- c(g1 = 1, g2 = 1,
                            c11 = 0.0005, c12 = 0.001, 
@@ -16,11 +16,9 @@ scenario_2_parameters <- c(g1 = 1, g2 = 1,
                            m1A = -.025, m1B = -.025,
                            m2A = -.01, m2B = -.01,
                            vA1 = 0.005, vA2 = 0, vB1 = 0, vB2 = 0.005,
-                           qA = 0.1, qB = 0.1)
+                           qA = 0.1, qB = 0.1, for_app = TRUE)
 times <- seq(from = 0, to = 85, by = 0.1)
 
-aa <- do.call(predict_interaction_outcome, as.list(scenario_1_parameters))
-aa$trajectory
 server <- function(input, output, session) {
   
   # Reset to Scenario 1 ----
@@ -76,25 +74,26 @@ server <- function(input, output, session) {
       m2A = input$m2A, m2B = input$m2B, 
       vA1 = input$vA1, vA2 = 0, 
       vB1 = 0, vB2 = input$vB2,
-      qA = input$qA, qB = input$qB)
+      qA = input$qA, qB = input$qB,
+      for_app = TRUE)
   })
   
   # Scenario outcomes ----
-  scenario_1_outcome <- reactive({
+  current_outcome <- reactive({
     do.call(predict_interaction_outcome, as.list(current_parameters()))
   })
   
   # Make plot ------
   plot_df <- reactive({
-    data.frame(nd = c(1-scenario_1_outcome()$rho,
-                      1-scenario_1_outcome()$rho_micr,
-                      1-scenario_1_outcome()$rho_comp),
-               fd = c(scenario_1_outcome()$fitness_ratio,
-                      scenario_1_outcome()$fitness_ratio_micr,
-                      scenario_1_outcome()$fitness_ratio_comp),
-               outcome = c(scenario_1_outcome()$coex_outcome,
-                           scenario_1_outcome()$coex_outcome_micr,
-                           scenario_1_outcome()$coex_outcome_comp),
+    data.frame(nd = c(1-current_outcome()$rho,
+                      1-current_outcome()$rho_micr,
+                      1-current_outcome()$rho_comp),
+               fd = c(current_outcome()$fitness_ratio,
+                      current_outcome()$fitness_ratio_micr,
+                      current_outcome()$fitness_ratio_comp),
+               outcome = c(current_outcome()$coex_outcome,
+                           current_outcome()$coex_outcome_micr,
+                           current_outcome()$coex_outcome_comp),
                which = c("Net outcome", "Microbes Only", "Competition Only"))
   })  
   
@@ -112,11 +111,11 @@ server <- function(input, output, session) {
   })
   
   output$plot2 <- renderPlot({
-    yn1 <- filter(scenario_1_outcome()$trajectory, species == "Ni") %>% 
+    yn1 <- filter(current_outcome()$trajectory, species == "Ni") %>% 
       select(size) %>% tail(., n = 1) %>% unlist %>% unname
-    yn2 <- filter(scenario_1_outcome()$trajectory, species == "Nj") %>% 
+    yn2 <- filter(current_outcome()$trajectory, species == "Nj") %>% 
       select(size) %>% tail(., n = 1) %>% unlist %>% unname
-    plot_trajectories(scenario_1_outcome()$trajectory) + 
+    plot_trajectories(current_outcome()$trajectory) + 
       annotate("text", x = 120, y = yn1+5, label = latex2exp::TeX("N_1"), size = 6) + 
       annotate("text", x = 90, y = yn2+5, label = latex2exp::TeX("N_2"), size = 6) +
       labs(title = "Trajectory for Net outcome") + 
