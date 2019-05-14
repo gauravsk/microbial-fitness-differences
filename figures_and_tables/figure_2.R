@@ -75,11 +75,6 @@ scenario_2_outcome_NOCOMP <- do.call(predict_interaction_outcome,
 
 # Make figure 2 ----
 scenarios_1and2 <- list(scenario_1_outcome,
-                        scenario_1_outcome_NOMICR,
-                        scenario_2_outcome,
-                        scenario_2_outcome_NOCOMP,
-                        scenario_2_outcome_NOMICR)
-scenarios_1and2 <- list(scenario_1_outcome,
                         scenario_2_outcome)
 
 # Get the values of niche overlap from all the scenarios
