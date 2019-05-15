@@ -365,6 +365,32 @@ model_RPS <-  function(t, y, parms) {
 }
 
 
+# Make the "super truncated" cone, extending from
+# rho = 0 to rho ~ 0.35
+# This gets used to show the three-species system in the nd/fd space
+coex_cone_for_multisp <- ggplot(data = df) + 
+  geom_ribbon(aes(x = niche_diff, ymin = min_fitness_ratio, 
+                  ymax = max_fitness_ratio)) +
+  scale_y_log10(limits = c(10^-.3, 10^.3)) + 
+  ylab(latex2exp::TeX("$\\frac{\\kappa_i}{\\kappa_j}$")) + 
+  xlab(latex2exp::TeX("Niche difference ($1-\\rho$)")) +
+  annotate("text", x = 0.3, y = 1, label = "Coexistence", hjust = 1,
+           col = "white", size = 5, fontface = "bold") + 
+  annotate("text", x = 0.2, y = 1.75,
+           label = latex2exp::TeX("Exclusion by species $j$"), 
+           size = 5, hjust = 0.5) +
+  annotate("text", x = 0.2, y = .6,
+           label = latex2exp::TeX("Exclusion by species $i$"), 
+           size = 5, hjust = 0.5) +
+  # scale_x_continuous(expand = c(0, 0), limits = c(0,0.5))  + 
+  xlim(c(0, 0.3)) +
+  theme_gsk() +   
+  theme(axis.title.y = element_text(size = 15, vjust = 0.5),
+        axis.title.x = element_text(size = 15))
+
+
+
+
 
 
 

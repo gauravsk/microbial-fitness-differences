@@ -3,7 +3,7 @@
 ### Gaurav Kandlikar, gaurav.kandlikar@gmail.com
 ### Last edit: 18 April 2019  
 
-### This file generates Figure S3.2 for Appendix S3 of the manuscript.  
+### This file generates Figures S3.2 and S3.3 for Appendix S3 of the manuscript.  
 
 
 rm(list = ls())
@@ -168,11 +168,68 @@ figure_S3.2 <- all_three +
   plot_layout(widths = c(3, 1)) +
   NULL
 
+# Save the image as a PDF
+ggsave("figures_and_tables/figures/figure-S3.2.pdf", figure_S3.2, width = 8, height = 4.5, units = "in")
+
+
+
+# Now, make figure S3.3. ------
+# This shows the three species pairs from above in the nd/fd space.
+init <- c("Ni" = 40, "Nj" = 50, "Sk" = 15, "Sl" = 15)
+
+
+scenario_3_pair12 <- c(g1 = .2, g2 = .2,
+                       c11 = .001, c12 = .001, 
+                       c21 = .001, c22 = .001,
+                       
+                       m1A = -0.015/2, m1B = -0.01/2,   
+                       m2A = -0.01/2, m2B = -0.013/2, 
+                       
+                       vA1 = 0.01, vB1 = 0, 
+                       vA2 = 0, vB2 = 0.01, 
+                       qA = 0.01, qB = 0.01)
+pair_12 <- do.call(predict_interaction_outcome, as.list(scenario_3_pair12))
+
+
+scenario_3_pair13 <- c(g1 = .2, g2 = .2,
+                       c11 = .001,  c12 = .001,
+                       c21 = .001,  c22 = .001,
+                       
+                       m1A = -0.015/2,  m1B = -0.01/2,
+                       m2A = -.0014/2,  m2B = -0.012/2,
+                       
+                       vA1 = 0.01, vB1 = 0,
+                       vA2 = 0, vB2 = 0.01,
+                       qA = 0.01, qB = 0.01)
+pair_13 <- do.call(predict_interaction_outcome, as.list(scenario_3_pair13))
+
+scenario_3_pair23 <- c(g1 = .2, g2 = .2,
+                       c11 = .001,  c12 = .001,
+                       c21 = .001,  c22 = .001,
+                       
+                       m1A = -0.013/2,  m1B = -0.01/2,
+                       m2A =  -0.012/2, m2B = -0.012/2,
+                       
+                       vA1 = 0.01,  vB1 = 0,
+                       vA2 = 0, vB2 = 0.01,
+                       qA = 0.01, qB = 0.01)
+pair_23 <- do.call(predict_interaction_outcome, as.list(scenario_3_pair23))
+
+coex_cone_scenarioS3.b <- make_coex_cone_w_scenarios(which_base = coex_cone_for_multisp,
+                                                     list_of_scenarios = list(pair_12, pair_13, pair_23), 
+                                                     scenario_names = c("S3.b, i,j = 1,2", 
+                                                                        "S3.b, i,j = 1,3", 
+                                                                        "S3.b, i,j = 2,3"), 
+                                                     lab_adj = 0.04) + 
+  scale_color_manual(values = "white") 
+coex_cone_scenarioS3.b
+
+ggsave(filename = "figures_and_tables/figures/figure-S3.3.pdf",
+       plot = coex_cone_scenarioS3.b, height = 5, width = 8)
+
 # Save the Environment as figure_3.RData, because it will
 # be used to make the tables of parameter values in 
 # Appendix S3. 
 save.image(file = "figure_S3.2.Rdata")
 
-# Save the image as a PDF
-ggsave("figures_and_tables/figures/figure-S3.2.pdf", figure_S3.2, width = 8, height = 4.5, units = "in")
 

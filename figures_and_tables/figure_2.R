@@ -193,7 +193,7 @@ traj_2_comp <- plot_trajectories(scenario_2_outcome_NOMICR$trajectory, ylab_text
 
 # Put them all together
 figure_2 <- figure_2A / 
-  {traj_1 + {traj_2_comp + traj_2_micr + traj_2_net} + plot_layout(width = c(1/4, 3/4))} + 
+  {traj_1 + {traj_2_comp + traj_2_microbes + traj_2_net} + plot_layout(width = c(1/4, 3/4))} + 
   plot_layout(height = c(2/3, 1/3))
 
 
