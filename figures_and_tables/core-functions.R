@@ -350,9 +350,9 @@ model_RPS <-  function(t, y, parms) {
   
   with(as.list(c(y, parms)),{
     
-    dN1 <- g1*(1 - c11*N1 - c12*N2 - c13*N3 + a1A*SA + a1B*SB + a1C*SC)*N1
-    dN2 <- g2*(1 - c21*N1 - c22*N2 - c23*N3 + a2A*SA + a2B*SB + a2C*SC)*N2
-    dN3 <- g3*(1 - c31*N1 - c32*N2 - c33*N3 + a3A*SA + a3B*SB + a3C*SC)*N3
+    dN1 <- g1*(1 - c11*N1 - c12*N2 - c13*N3 + m1A*SA + m1B*SB + m1C*SC)*N1
+    dN2 <- g2*(1 - c21*N1 - c22*N2 - c23*N3 + m2A*SA + m2B*SB + m2C*SC)*N2
+    dN3 <- g3*(1 - c31*N1 - c32*N2 - c33*N3 + m3A*SA + m3B*SB + m3C*SC)*N3
     
     dSA <- (vA1*N1 + vA2*N2 + vA3*N3 - qA*SA)*SA
     dSB <- (vB1*N1 + vB2*N2 + vB3*N3 - qB*SB)*SB
