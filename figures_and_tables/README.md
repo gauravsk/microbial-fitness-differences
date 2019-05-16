@@ -8,4 +8,4 @@
 - `figure_S5.1.R`: R code to generate Figure S5.1 in Appendix 5.  
 - `figure_S5.2.R`: R code to generate Figure S5.2 in Appendix 5.
 
-- The `figures/` subdirectory contains PDFs of all of the figures listed above. 
+- The `figures/` subdirectory contains PDFs of all of the figures listed above. Note that Figure 1 and Figure 4A are conceptual diagrams that were created manually (not scripted).
