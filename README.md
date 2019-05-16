@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/182208925.svg)](https://zenodo.org/badge/latestdoi/182208925)
+
 Repository for files from Kandlikar et al 'Winning and losing with microbes: how microbially mediated fitness differences influence plant diversity'. 
 
 The `figures_and_tables` directory contains code used to generate figures in the main text and supplement.  The subdirectory `figures_and_tables/figures/` contains PDF files of all figures in the main text and supplement. 
