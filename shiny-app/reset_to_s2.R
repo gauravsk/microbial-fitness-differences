@@ -1,3 +1,12 @@
+scenario_2_parameters <- c(g1 = 1, g2 = 1,
+                           c11 = 0.0005, c12 = 0.001, 
+                           c21 = 0.001, c22 = 0.002,
+                           m1A = -.025, m1B = -.025,
+                           m2A = -.01, m2B = -.01,
+                           vA1 = 0.005, vA2 = 0, vB1 = 0, vB2 = 0.005,
+                           qA = 0.1, qB = 0.1, for_app = TRUE)
+
+
 updateSliderInput(session, "m1A", value = unname(scenario_2_parameters["m1A"]))
 updateSliderInput(session, "m1B", value = unname(scenario_2_parameters["m1B"]))
 updateSliderInput(session, "m2A", value = unname(scenario_2_parameters["m2A"]))

@@ -5,45 +5,6 @@ source("core-functions-copy.R")
 source("twosp_functions.R")
 source("threesp_functions.R")
 
-scenario_1_parameters <- c(g1 = 1, g2 = 1,
-                           c11 = 0.003, c12 = 0.0024,
-                           c21 = 0.002, c22 = 0.004,
-                           m1A = -0.05, m1B = -0.04,
-                           m2A = -0.01, m2B = -0.021,
-                           vA1 = 0.005, vA2 = 0, vB1 = 0, vB2 = 0.005,
-                           qA = 0.01, qB = 0.01, for_app = TRUE)
-
-scenario_2_parameters <- c(g1 = 1, g2 = 1,
-                           c11 = 0.0005, c12 = 0.001, 
-                           c21 = 0.001, c22 = 0.002,
-                           m1A = -.025, m1B = -.025,
-                           m2A = -.01, m2B = -.01,
-                           vA1 = 0.005, vA2 = 0, vB1 = 0, vB2 = 0.005,
-                           qA = 0.1, qB = 0.1, for_app = TRUE)
-
-
-scenario_3_parameters <- c(g1 = .2, g2 = .2, g3 = .2,   
-                      ## COMPETITION
-                      c11 = .001, c12 = .001, c13 = .001,
-                      c21 = .001, c22 = .001, c23 = .001,
-                      c31 = .001, c32 = .001, c33 = .001,
-                      
-                      # MICROBE EFFECTS
-                      m1A = -0.012/2, m1B = -0.01/2,  m1C = -0.03/2.25,
-                      m2A = -0.013/2, m2B = -0.017/2, m2C = -0.015/2,
-                      m3A = -.0075/2, m3B = -0.018/2, m3C = -0.02/2,
-                      
-                      
-                      ## MICROBE INTRINSIC
-                      qA = .01, qB = .01, qC = .01,
-                      
-                      ## PLANT EFFECTS ON MICROBES
-                      vA1 = 0.01, vB1 = 0, vC1 = 0,
-                      vA2 = 0, vB2 = 0.01, vC2 = 0,
-                      vA3 = 0, vB3 = 0, vC3 = 0.01)
-
-
-
 times <- seq(from = 0, to = 85, by = 0.1)
 
 init_3sp <- c("N1" = 50, "N2" = 20, "N3" = 10,
@@ -60,7 +21,7 @@ server <- function(input, output, session) {
   observeEvent(input$scenario2_reset, {
     source("reset_to_s2.R", local = TRUE)
   })
-  
+
   # Two species panel: Set parameter values -----
   current_parameters <- reactive({
     c(g1 = input$g1, g2 = input$g2, 
@@ -106,6 +67,10 @@ server <- function(input, output, session) {
   observeEvent(input$scenario3_reset, {
     source("reset_to_s3.R", local = TRUE)
   })
+  observeEvent(input$scenario3.2_reset, {
+    source("reset_to_s3.2.R", local = TRUE)
+  })
+  
   times <- seq(from = 0, to = 1200, by = .2)
   
   current_parameters_3sp <- reactive({    

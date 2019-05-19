@@ -137,7 +137,8 @@ ui <- dashboardPage(
               h2("Widgets tab"),
               
               # First row ----
-              fluidRow(box(actionButton("scenario3_reset", label = "Reset to Scenario 3"))),
+              fluidRow(box(actionButton("scenario3_reset", label = "Reset to Scenario 3"),
+                           actionButton("scenario3.2_reset", label = "Reset to Scenario 3.2"))),
               
               # Second row: inputs -----
               fluidRow(
