@@ -2,6 +2,9 @@ library(tidyverse)
 library(patchwork)
 library(deSolve)
 source("core-functions-copy.R")
+source("twosp_functions.R")
+source("threesp_functions.R")
+
 scenario_1_parameters <- c(g1 = 1, g2 = 1,
                            c11 = 0.003, c12 = 0.0024,
                            c21 = 0.002, c22 = 0.004,
@@ -17,55 +20,48 @@ scenario_2_parameters <- c(g1 = 1, g2 = 1,
                            m2A = -.01, m2B = -.01,
                            vA1 = 0.005, vA2 = 0, vB1 = 0, vB2 = 0.005,
                            qA = 0.1, qB = 0.1, for_app = TRUE)
+
+
+scenario_3_parameters <- c(g1 = .2, g2 = .2, g3 = .2,   
+                      ## COMPETITION
+                      c11 = .001, c12 = .001, c13 = .001,
+                      c21 = .001, c22 = .001, c23 = .001,
+                      c31 = .001, c32 = .001, c33 = .001,
+                      
+                      # MICROBE EFFECTS
+                      m1A = -0.012/2, m1B = -0.01/2,  m1C = -0.03/2.25,
+                      m2A = -0.013/2, m2B = -0.017/2, m2C = -0.015/2,
+                      m3A = -.0075/2, m3B = -0.018/2, m3C = -0.02/2,
+                      
+                      
+                      ## MICROBE INTRINSIC
+                      qA = .01, qB = .01, qC = .01,
+                      
+                      ## PLANT EFFECTS ON MICROBES
+                      vA1 = 0.01, vB1 = 0, vC1 = 0,
+                      vA2 = 0, vB2 = 0.01, vC2 = 0,
+                      vA3 = 0, vB3 = 0, vC3 = 0.01)
+
+
+
 times <- seq(from = 0, to = 85, by = 0.1)
+
+init_3sp <- c("N1" = 50, "N2" = 20, "N3" = 10,
+          "SA" = 10, "SB" = 10, "SC" = 10)
 
 server <- function(input, output, session) {
   
-  # Reset to Scenario 1 ----
+  # Two species panel: Reset to Scenario 1 ----
   observeEvent(input$scenario1_reset, {
-    updateSliderInput(session, "m1A", value = unname(scenario_1_parameters["m1A"]))
-    updateSliderInput(session, "m1B", value = unname(scenario_1_parameters["m1B"]))
-    updateSliderInput(session, "m2A", value = unname(scenario_1_parameters["m2A"]))
-    updateSliderInput(session, "m2B", value = unname(scenario_1_parameters["m2B"]))
-    
-    updateSliderInput(session, "c11", value = unname(scenario_1_parameters["c11"]))
-    updateSliderInput(session, "c12", value = unname(scenario_1_parameters["c12"]))
-    updateSliderInput(session, "c21", value = unname(scenario_1_parameters["c21"]))
-    updateSliderInput(session, "c22", value = unname(scenario_1_parameters["c22"]))
-
-    updateSliderInput(session, "qA", value = unname(scenario_1_parameters["qA"]))
-    updateSliderInput(session, "qB", value = unname(scenario_1_parameters["qB"]))
-    
-    updateSliderInput(session, "vA1", value = unname(scenario_1_parameters["vA1"]))
-    updateSliderInput(session, "vB2", value = unname(scenario_1_parameters["vB2"]))
-    
-    updateSliderInput(session, "g1", value = unname(scenario_1_parameters["g1"]))
-    updateSliderInput(session, "g2", value = unname(scenario_1_parameters["g2"]))
+    source("reset_to_s1.R", local = TRUE)
   })
   
-  # Reset to Scenario 2 ----
+  # Two species panel: Reset to Scenario 2 ----
   observeEvent(input$scenario2_reset, {
-    updateSliderInput(session, "m1A", value = unname(scenario_2_parameters["m1A"]))
-    updateSliderInput(session, "m1B", value = unname(scenario_2_parameters["m1B"]))
-    updateSliderInput(session, "m2A", value = unname(scenario_2_parameters["m2A"]))
-    updateSliderInput(session, "m2B", value = unname(scenario_2_parameters["m2B"]))
-    
-    updateSliderInput(session, "c11", value = unname(scenario_2_parameters["c11"]))
-    updateSliderInput(session, "c12", value = unname(scenario_2_parameters["c12"]))
-    updateSliderInput(session, "c21", value = unname(scenario_2_parameters["c21"]))
-    updateSliderInput(session, "c22", value = unname(scenario_2_parameters["c22"]))
-    
-    updateSliderInput(session, "qA", value = unname(scenario_2_parameters["qA"]))
-    updateSliderInput(session, "qB", value = unname(scenario_2_parameters["qB"]))
-    
-    updateSliderInput(session, "vA1", value = unname(scenario_2_parameters["vA1"]))
-    updateSliderInput(session, "vB2", value = unname(scenario_2_parameters["vB2"]))
-    
-    updateSliderInput(session, "g1", value = unname(scenario_2_parameters["g1"]))
-    updateSliderInput(session, "g2", value = unname(scenario_2_parameters["g2"]))
+    source("reset_to_s2.R", local = TRUE)
   })
   
-  # Set parameter values -----
+  # Two species panel: Set parameter values -----
   current_parameters <- reactive({
     c(g1 = input$g1, g2 = input$g2, 
       c11 = input$c11, c12 = input$c12, 
@@ -78,12 +74,12 @@ server <- function(input, output, session) {
       for_app = TRUE)
   })
   
-  # Scenario outcomes ----
+  # Two species panel: Scenario outcomes ----
   current_outcome <- reactive({
     do.call(predict_interaction_outcome, as.list(current_parameters()))
   })
   
-  # Make plot ------
+  # Two species panel: Make plot ------
   plot_df <- reactive({
     data.frame(nd = c(1-current_outcome()$rho,
                       1-current_outcome()$rho_micr,
@@ -98,28 +94,42 @@ server <- function(input, output, session) {
   })  
   
   
-  output$cone <- renderPlot({
-    coex_cone_truncated + 
-      geom_point(data = plot_df(), aes(x = nd, y = fd, fill = factor(which), size = which),
-                 pch = 21, stroke = 1.2) + 
-      scale_fill_manual(values = c("#CC79A7", "#CC79A7", "#F0E442")) +
-      scale_size_manual(values = c(3,3,6)) + 
-      geom_text(data = plot_df(), aes(x = nd +.01, y = fd, label = which, color = outcome), hjust = 0,
-                size = c(7,4,4), fontface = "bold.italic") +
-      scale_color_manual(values = c("white", "black")) + 
-      theme(legend.position = "none")
+  output$twosp_cone <- renderPlot({
+    twospecies_cone(plot_df())
   })
   
-  output$plot2 <- renderPlot({
-    yn1 <- filter(current_outcome()$trajectory, species == "Ni") %>% 
-      select(size) %>% tail(., n = 1) %>% unlist %>% unname
-    yn2 <- filter(current_outcome()$trajectory, species == "Nj") %>% 
-      select(size) %>% tail(., n = 1) %>% unlist %>% unname
-    plot_trajectories(current_outcome()$trajectory) + 
-      annotate("text", x = 120, y = yn1+5, label = latex2exp::TeX("N_1"), size = 6) + 
-      annotate("text", x = 90, y = yn2+5, label = latex2exp::TeX("N_2"), size = 6) +
-      labs(title = "Trajectory for Net outcome") + 
-      theme(title = element_text(size = 14))
+  output$twosp_traj <- renderPlot({
+    twospecies_trajectory(current_outcome()$trajectory)
+  })
+  
+  # Three species panel -------
+  observeEvent(input$scenario3_reset, {
+    source("reset_to_s3.R", local = TRUE)
+  })
+  times <- seq(from = 0, to = 1200, by = .2)
+  
+  current_parameters_3sp <- reactive({    
+    c(g1 = input$g1_3,g2 = input$g2_3,g3 = input$g3_3,
+      c11 = input$c11_3,c12 = input$c12_3,c13 = input$c13_3,
+      c21 = input$c21_3,c22 = input$c22_3,c23 = input$c23_3,
+      c31 = input$c31_3,c32 = input$c32_3,c33 = input$c33_3,
+      m1A = input$m1A_3,m1B = input$m1B_3,m1C = input$m1C_3,
+      m2A = input$m2A_3,m2B = input$m2B_3,m2C = input$m2C_3,
+      m3A = input$m3A_3,m3B = input$m3B_3,m3C = input$m3C_3,
+      
+      vA1 = input$vA1_3, vA2 = 0, vA3 = 0,
+      vB1 = 0, vB2 = input$vB2_3, vB3 = 0,
+      vC1 = 0, vC2 = 0, vC3 = input$vC3_3,
+      
+      qA = input$qA_3,qB = input$qB_3,qC = input$qC_3)
+  })
+ 
+  output$threesp_traj <- renderPlot({
+    make_threesp_plots(initvals = init_3sp, times = times, parameters = current_parameters_3sp())
+  })
+  
+  output$threesp_cone <- renderPlot({
+    make_3sp_cone(parameters = current_parameters_3sp())
   })
   
 }
