@@ -131,7 +131,7 @@ server <- function(input, output, session) {
                which = c("Net outcome", "Microbes Only", "Competition Only"))
   })  
   output$resourcomp_cone <- renderPlot({
-    twospecies_cone(plot_df_RC())
+    twospecies_cone(plot_df_RC()) 
   })
   
 }

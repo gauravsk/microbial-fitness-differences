@@ -10,6 +10,14 @@ twospecies_cone <- function(df) {
               size = c(7,4,4), fontface = "bold.italic") +
     scale_color_manual(values = c("white", "black")) + 
     theme(legend.position = "none")
+  
+  if (all(df$outcome == "coexist")) {
+    cone <- cone + scale_color_manual(values = "white")
+  }
+
+  if (all(df$outcome == "exclusion")) {
+    cone <- cone + scale_color_manual(values = "black")
+  }
   return(cone)
 }
 

@@ -140,13 +140,26 @@ make_3sp_cone <- function(parameters) {
   pair_13_outcome <- do.call(predict_interaction_outcome, as.list(pair_13))
   pair_23_outcome <- do.call(predict_interaction_outcome, as.list(pair_23))
 
-  make_coex_cone_w_scenarios(which_base = coex_cone_for_multisp,
+  p <- make_coex_cone_w_scenarios(which_base = coex_cone_for_multisp,
                              list_of_scenarios = list(pair_12_outcome, pair_13_outcome, pair_23_outcome),
                              scenario_names = c("S3, i,j = 1,2",
                                                 "S3, i,j = 1,3",
                                                 "S3, i,j = 2,3"),
                              lab_adj = 0.02) +
-    scale_color_manual(values = c("white", "black"))
+    # scale_color_manual(values = c("white", "black"))
+    NULL
+  
+  if (pair_12_outcome$coex_outcome == "coexist" & 
+           pair_13_outcome$coex_outcome == "coexist" & 
+           pair_23_outcome$coex_outcome == "coexist") {
+    p <- p + scale_color_manual(values = "white")
+  }
 
+  if (pair_12_outcome$coex_outcome == "exclusion" & 
+           pair_13_outcome$coex_outcome == "exclusion" & 
+           pair_23_outcome$coex_outcome == "exclusion") {
+    p <- p + scale_color_manual(values = "black")
+  }
+  p
   }
 
