@@ -146,7 +146,7 @@ make_3sp_cone <- function(parameters) {
                                                 "S3, i,j = 1,3",
                                                 "S3, i,j = 2,3"),
                              lab_adj = 0.02) +
-    scale_color_manual(values = "black")
+    scale_color_manual(values = c("white", "black"))
 
   }
 

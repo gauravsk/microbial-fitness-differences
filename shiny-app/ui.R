@@ -5,14 +5,19 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Two species system", tabName = "twosp", icon = icon("seedling")),
-      menuItem("Three species system", tabName = "threesp", icon = icon("seedling"))
+      menuItem("Three species system", tabName = "threesp", icon = icon("seedling")),
+      menuItem("Resource competition model", tabName = "resourceComp", icon = icon("seedling"))
+      
     )
   ),
 
       
   dashboardBody(
     tabItems(
+      # First tab content -----
       tabItem(tabName = "twosp",
+              h2("Dynamics of a system with two plant species (phenomenological competition)"),
+              (includeMarkdown("docs/test.md")),
               # First row ----
               fluidRow(box(title = "Note: app under development as of 13 May 2019",
                            actionButton("scenario1_reset", label = "Reset to Scenario 1"),
@@ -134,7 +139,7 @@ ui <- dashboardPage(
       
       # Second tab content ------
       tabItem(tabName = "threesp",
-              h2("Widgets tab"),
+              h2("Dynamics of a system with three plant species"),
               
               # First row ----
               fluidRow(box(actionButton("scenario3_reset", label = "Reset to Scenario 3"),
@@ -329,10 +334,156 @@ ui <- dashboardPage(
                 box(width = 6, plotOutput("threesp_traj"))
                 
               )
-  
+              
+      ),
+      
+      # Third tab content-------
+      
+      tabItem(tabName = "resourceComp",
+              
+              h2("Dynamics of a system with explicit resource competition among plants"),
+              
+              fluidRow(box(actionButton("resourcecomp_reset", label = "Reset to default values"))),
+              
+              fluidRow(
+                # Box for plant uptake of resources --------
+                box(
+                  width = 3,
+                  solidHeader = TRUE,
+                  collapsible = TRUE,
+                  title = "Plant resource uptake rates",
+                  column(6,
+                         sliderInput(inputId = "u1l_RC",
+                                     label = withMathJax("Per-capita of resource \\(l\\) by plant 1 (\\(u_{1l}\\))"),
+                                     min = 0.0001,
+                                     max = 0.01,
+                                     value = 0.002),
+                         sliderInput(inputId = "u2l_RC",
+                                     label = withMathJax("Per-capita of resource \\(l\\) by plant 2 (\\(u_{2l}\\))"),
+                                     min = 0.0001,
+                                     max = 0.01,
+                                     value = 0.0002)),
+                  column(6,
+                         sliderInput(inputId = "u1n_RC",
+                                     label = withMathJax("Per-capita of resource \\(n\\) by plant1 (\\(u_{1n}\\))"),
+                                     min = 0.0001,
+                                     max = 0.01,
+                                     value = 0.0002),
+                         sliderInput(inputId = "u2n_RC",
+                                     label = withMathJax("Per-capita of resource \\(n\\) by plant 2 (\\(u_{2n}\\))"),
+                                     min = 0.0001,
+                                     max = 0.01,
+                                     value = 0.002))
+                ), # closes box ----
+                # Box for microbe effects on plants ------
+                box(width = 3,
+                    solidHeader = TRUE,
+                    collapsible = TRUE,
+                    title = "Microbe effects on plants and plant effects on microbes",
+                    column(4,
+                           sliderInput(inputId = "m1A_RC",
+                                       label = withMathJax("Effect of microbes A on species 1 (\\(m_{1A}\\))"),
+                                       min = -0.1,
+                                       max = 0.1,
+                                       value = -.005),
+                           sliderInput(inputId = "m1B_RC",
+                                       label = withMathJax("Effect of microbes B on species 1 (\\(m_{1B}\\))"),
+                                       min = -0.1,
+                                       max = 0.1,
+                                       value = -0.0048)
+                    ),
+                    column(4,
+                           sliderInput(inputId = "m2A_RC",
+                                       label = withMathJax("Effect of microbes A on species 2 (\\(m_{2A}\\))"),
+                                       min = -0.1,
+                                       max = 0.1,
+                                       value = -0.0048),
+                           sliderInput(inputId = "m2B_RC",
+                                       label = withMathJax("Effect of microbes B on species 2 (\\(m_{2B}\\))"),
+                                       min = -0.1,
+                                       max = 0.1,
+                                       value = -0.005)
+                    ),
+                    column(4,
+                           sliderInput(inputId = "vA1_RC",
+                                       label = withMathJax("Effect of species 1 on microbes A (\\(v_{A1}\\))"),
+                                       min = 0.0001,
+                                       max = 0.01,
+                                       value = 0.005),
+                           sliderInput(inputId = "vB2_RC",
+                                       label = withMathJax("Effect of species 2 on microbes B (\\(v_{B2}\\))"),
+                                       min = 0.0001,
+                                       max = 0.01,
+                                       value = 0.005)
+                    )
+                ), # closes box ----
+                # Box for microbe and plant mortality rates ----
+                
+                box(width = 3,
+                    solidHeader = TRUE,
+                    collapsible = TRUE,
+                    title = "Intrinsic mortality rates for microbes and plants",
+                    column(6,
+                           sliderInput(inputId = "mu1_RC",
+                                       label = withMathJax("Intrinsic mortality rate of species 1 (\\(\\mu_1\\))"),
+                                       min = .0001,
+                                       max = .1,
+                                       value = .001),
+                           sliderInput(inputId = "mu2_RC",
+                                       label = withMathJax("Intrinsic mortality rate of species 2 (\\(\\mu_2\\))"),
+                                       min = .0001,
+                                       max = .1,
+                                       value = .001)),
+                    column(6,
+                           sliderInput(inputId = "qA_RC",
+                                       label = withMathJax("Mortality rates of microbes A \\((q_A\\))"),
+                                       min = 0.0001,
+                                       max = 0.1,
+                                       value = .005),
+                           sliderInput(inputId = "qB_RC",
+                                       label = withMathJax("Mortality rates of microbes B \\((q_B\\))"),
+                                       min = 0.0001,
+                                       max = 0.1,
+                                       value = .005))
+                ), # closes box -----
+                # Box for intrinsic growth and limitation for resources ----
+                box(width = 3,
+                    solidHeader = TRUE,
+                    collapsible = TRUE,
+                    title = "Intrinsic growth and limitation for resources",
+                    column(6,
+                           sliderInput(inputId = "rl_RC",
+                                       label = withMathJax("Intrinsic growth rate of resource \\(l\\) (\\(r_l\\))"),
+                                       min = 0.001,
+                                       max = .1,
+                                       value = 0.03),
+                           sliderInput(inputId = "rn_RC",
+                                       label = withMathJax("Intrinsic growth rate of resource \\(n\\) (\\(r_n\\))"),
+                                       min = 0.001,
+                                       max = .1,
+                                       value = 0.03)),
+                    column(6,
+                           sliderInput(inputId = "sl_RC",
+                                       label = withMathJax("Saturation rate of resource \\(l\\) (\\(s_l\\))"),
+                                       min = 0.0001,
+                                       max = 0.1,
+                                       value = .001),
+                           sliderInput(inputId = "sn_RC",
+                                       label = withMathJax("Saturation rate of resource \\(n\\) (\\(s_n\\))"),
+                                       min = 0.0001,
+                                       max = 0.1,
+                                       value = .001)
+                    ) # closes column
+                ) # closes box  -----
+              ), # closes row
+              
+              # Next row ----
+              
+              fluidRow(
+                box(width = 8, plotOutput("resourcomp_cone"))
+              )
               
       )
     )
   )
 )
-

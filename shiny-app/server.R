@@ -97,4 +97,41 @@ server <- function(input, output, session) {
     make_3sp_cone(parameters = current_parameters_3sp())
   })
   
+  
+  # Resource competition panel --------
+  # Set parameter values
+  current_parameters_RC <- reactive({
+    c(u1l = input$u1l_RC, u2l = input$u2l_RC, 
+      u1n = input$u1n_RC, u2n = input$u2n_RC, 
+      m1A = input$m1A_RC, m1B = input$m1B_RC, 
+      m2A = input$m2A_RC, m2B = input$m2B_RC, 
+      vA1 = input$vA1_RC, vA2 = 0, 
+      vB1 = 0, vB2 = input$vB2_RC,
+      qA = input$qA_RC, qB = input$qB_RC,
+      mu1 = input$mu1_RC, mu2 = input$mu2_RC,
+      rl = input$rl_RC, rn = input$rn_RC,
+      s_l = input$sl_RC, s_n = input$sn_RC
+      )
+  })
+  current_outcome_RC <- reactive({
+    do.call(predict_interaction_outcome_RC, as.list(current_parameters_RC()))
+  })
+  
+  # Two species panel: Make plot ------
+  plot_df_RC <- reactive({
+    data.frame(nd = c(1-current_outcome_RC()$rho,
+                      1-current_outcome_RC()$rho_micr,
+                      1-current_outcome_RC()$rho_comp),
+               fd = c(current_outcome_RC()$fitness_ratio,
+                      current_outcome_RC()$fitness_ratio_micr,
+                      current_outcome_RC()$fitness_ratio_comp),
+               outcome = c(current_outcome_RC()$coex_outcome,
+                           current_outcome_RC()$coex_outcome_micr,
+                           current_outcome_RC()$coex_outcome_comp),
+               which = c("Net outcome", "Microbes Only", "Competition Only"))
+  })  
+  output$resourcomp_cone <- renderPlot({
+    twospecies_cone(plot_df_RC())
+  })
+  
 }
