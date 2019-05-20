@@ -400,11 +400,11 @@ coex_cone_for_multisp <- ggplot(data = df) +
 
 # Caculate low-density growth rates
 lowdens_grs_RC <- function(u1l, u2l, u1n, u2n,
-                           el, en, alpha_l, alpha_n,
+                           s_l, s_n,
                            m1A, m2A, m1B, m2B, qA, qB,
                            mu1, mu2, ...) {
-  r_1 <- u1l*el/alpha_l + u1n*en/alpha_n - mu1
-  r_2 <- u2l*el/alpha_l + u2n*en/alpha_n - mu2
+  r_1 <- u1l/s_l + u1n/s_n - mu1
+  r_2 <- u2l/s_l + u2n/s_n - mu2
   to_return <- c("r1" = r_1, "r2" = r_2)
   return(to_return)
 }
@@ -412,20 +412,20 @@ lowdens_grs_RC <- function(u1l, u2l, u1n, u2n,
 # Calculate the pairwise interaction coefficient alpha'_ij
 # This function follows Eqn. 11 of the main text. 
 calculate_alphas_RC <- function(u1l, u2l, u1n, u2n,
-                                el, en, alpha_l, alpha_n,
+                                s_l, s_n,
                                 m1A, m2A, m1B, m2B, qA, qB,
                                 vA1, vA2, vB1, vB2,
                                 mu1, mu2, rl, rn, ...) {
   
   plant_rs <- lowdens_grs_RC(u1l, u2l, u1n, u2n,
-                             el, en, alpha_l, alpha_n,
+                             s_l, s_n,
                              m1A, m2A, m1B, m2B, qA, qB,
                              mu1, mu2)
   # Due to both interactions
-  alpha_11 <- ((u1l*u1l*el)/(alpha_l*rl) + (u1n*u1n*en)/(alpha_n*rn) - (m1A*vA1/qA) - (m1B*vB1/qB)) / plant_rs["r1"]
-  alpha_12 <- ((u1l*u2l*el)/(alpha_l*rl) + (u1n*u2n*en)/(alpha_n*rn) - (m1A*vA2/qA) - (m1B*vB2/qB)) / plant_rs["r1"]
-  alpha_21 <- ((u2l*u1l*el)/(alpha_l*rl) + (u2n*u1n*en)/(alpha_n*rn) - (m2A*vA1/qA) - (m2B*vB1/qB)) / plant_rs["r2"]
-  alpha_22 <- ((u2l*u2l*el)/(alpha_l*rl) + (u2n*u2n*en)/(alpha_n*rn) - (m2A*vA2/qA) - (m2B*vB2/qB)) / plant_rs["r2"]
+  alpha_11 <- ((u1l*u1l)/(s_l*rl) + (u1n*u1n)/(s_n*rn) - (m1A*vA1/qA) - (m1B*vB1/qB)) / plant_rs["r1"]
+  alpha_12 <- ((u1l*u2l)/(s_l*rl) + (u1n*u2n)/(s_n*rn) - (m1A*vA2/qA) - (m1B*vB2/qB)) / plant_rs["r1"]
+  alpha_21 <- ((u2l*u1l)/(s_l*rl) + (u2n*u1n)/(s_n*rn) - (m2A*vA1/qA) - (m2B*vB1/qB)) / plant_rs["r2"]
+  alpha_22 <- ((u2l*u2l)/(s_l*rl) + (u2n*u2n)/(s_n*rn) - (m2A*vA2/qA) - (m2B*vB2/qB)) / plant_rs["r2"]
   
   interaction_matrix <- matrix(c(alpha_11, alpha_12,
                                  alpha_21, alpha_22), byrow = TRUE, ncol = 2)
@@ -433,10 +433,10 @@ calculate_alphas_RC <- function(u1l, u2l, u1n, u2n,
   rownames(interaction_matrix) <- c("p1", "p2")
   
   # Due to competition alone
-  alpha_11_c <- ((u1l*u1l*el)/(alpha_l*rl) + (u1n*u1n*en)/(alpha_n*rn) - 0) / plant_rs["r1"]
-  alpha_12_c <- ((u1l*u2l*el)/(alpha_l*rl) + (u1n*u2n*en)/(alpha_n*rn) - 0) / plant_rs["r1"]
-  alpha_21_c <- ((u2l*u1l*el)/(alpha_l*rl) + (u2n*u1n*en)/(alpha_n*rn) - 0) / plant_rs["r2"]
-  alpha_22_c <- ((u2l*u2l*el)/(alpha_l*rl) + (u2n*u2n*en)/(alpha_n*rn) - 0) / plant_rs["r2"]
+  alpha_11_c <- ((u1l*u1l)/(s_l*rl) + (u1n*u1n)/(s_n*rn) - 0) / plant_rs["r1"]
+  alpha_12_c <- ((u1l*u2l)/(s_l*rl) + (u1n*u2n)/(s_n*rn) - 0) / plant_rs["r1"]
+  alpha_21_c <- ((u2l*u1l)/(s_l*rl) + (u2n*u1n)/(s_n*rn) - 0) / plant_rs["r2"]
+  alpha_22_c <- ((u2l*u2l)/(s_l*rl) + (u2n*u2n)/(s_n*rn) - 0) / plant_rs["r2"]
   
   interaction_matrix_c <- matrix(c(alpha_11_c, alpha_12_c,
                                    alpha_21_c, alpha_22_c), byrow = TRUE, ncol = 2)
@@ -465,17 +465,17 @@ calculate_alphas_RC <- function(u1l, u2l, u1n, u2n,
 # NOTE that this master function does not simulate dynamics.
 
 predict_interaction_outcome_RC <- function(u1l, u2l, u1n, u2n,
-                                           el, en, alpha_l, alpha_n,
+                                           s_l, s_n,
                                            m1A, m2A, m1B, m2B, qA, qB,
                                            vA1, vA2, vB1, vB2,
                                            mu1, mu2, rl, rn, ...) {
   
   plant_rs <- lowdens_grs_RC(u1l, u2l, u1n, u2n,
-                             el, en, alpha_l, alpha_n,
+                             s_l, s_n,
                              m1A, m2A, m1B, m2B, qA, qB,
                              mu1, mu2)
   alpha_matrices <- calculate_alphas_RC(u1l, u2l, u1n, u2n,
-                                        el, en, alpha_l, alpha_n,
+                                        s_l, s_n,
                                         m1A, m2A, m1B, m2B, qA, qB,
                                         vA1, vA2, vB1, vB2,
                                         mu1, mu2, rl, rn)

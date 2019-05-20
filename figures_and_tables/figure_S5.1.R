@@ -37,12 +37,11 @@ rhos_m_vec <- numeric(length(itervec))
 # variation in fitness differences.
 for (ii in 1:length(itervec)) {
   
-  parameter_vector <- c(u1l = .01, u1n = .001,
-                        u2l = .01, u2n = .001,
-                        el = .04, en = .04,
+  parameter_vector <- c(u1l = .01*.2, u1n = .001*.2,
+                        u2l = .01*.2, u2n = .001*.2,
                         mu1 = .001, mu2 = .001,
                         rl = itervec[ii], rn = itervec[ii],
-                        alpha_l = .001, alpha_n = .001,
+                        s_l = .001, s_n = .001,
                         
                         m1A = -.005, m1B = -.0048,
                         m2A = -.005*.75, m2B = -.0048*.75,
